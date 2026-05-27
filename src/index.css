@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-red: #FF3838;
+  --color-brand-orange: #FF7A00;
+  --color-brand-yellow: #FFB800;
+  --color-brand-dark: #F8FAFC;
+  --color-brand-card: #FFFFFF;
+  --color-brand-border: #E2E8F0;
+  --color-brand-text: #0F172A;
+  --color-brand-muted: #64748B;
+  
+  --font-sans: 'Outfit', 'Inter', sans-serif;
+}
+
+/* Base resets and overrides */
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #F8FAFC !important;
+  color: #0F172A !important;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: 'Outfit', 'Inter', sans-serif;
+}
+
+/* Custom Scrollbar styled for light mode */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #141414;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FF3838;
+}
+
+/* Glassmorphism utility for light mode */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.03);
+}
+
+.glass-effect-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glass-effect-hover:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(255, 122, 0, 0.2);
+  box-shadow: 0 16px 35px -10px rgba(255, 122, 0, 0.12);
+  transform: translateY(-3px);
+}
+
+/* Premium Floating Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Input Focus Glows styled for light mode */
+input:focus, select:focus, textarea:focus {
+  border-color: #FF7A00 !important;
+  box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.12) !important;
+  outline: none;
+}
