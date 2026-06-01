@@ -127,7 +127,7 @@ export default function CartDrawer({
               ) : (
                 <ShoppingBag className="w-5 h-5 text-brand-orange" />
               )}
-              <h2 className="text-lg font-bold text-white">
+              <h2 className="text-lg font-bold text-brand-text">
                 {isCheckoutStage ? 'Datos del Delivery UIDE' : 'Tu Pedido'}
               </h2>
               {!isCheckoutStage && (
@@ -138,7 +138,7 @@ export default function CartDrawer({
             </div>
             <button 
               onClick={onClose}
-              className="p-2 rounded-xl bg-brand-dark/50 hover:bg-brand-dark text-brand-muted hover:text-white border border-brand-border/40 transition-colors"
+              className="p-2 rounded-xl bg-brand-dark/50 hover:bg-brand-dark text-brand-muted hover:text-brand-orange border border-brand-border/40 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -162,7 +162,7 @@ export default function CartDrawer({
                       <div className="h-full flex flex-col items-center justify-center text-center py-20 space-y-4">
                         <ShoppingBag className="w-16 h-16 text-brand-muted/40 animate-pulse-slow" />
                         <div>
-                          <h3 className="text-base font-bold text-white">Tu carrito está vacío</h3>
+                          <h3 className="text-base font-bold text-brand-text">Tu carrito está vacío</h3>
                           <p className="text-xs text-brand-muted mt-1 max-w-[220px] mx-auto">Selecciona tu local favorito de la UIDE y añade productos para ordenar.</p>
                         </div>
                         <button 
@@ -188,7 +188,7 @@ export default function CartDrawer({
                           {/* Details */}
                           <div className="flex-1 min-w-0 text-left">
                             <div className="flex justify-between items-start gap-1">
-                              <h4 className="text-xs font-bold text-white truncate">{item.name}</h4>
+                              <h4 className="text-xs font-bold text-brand-text truncate">{item.name}</h4>
                               <span className={`text-xs font-bold whitespace-nowrap shrink-0 ${
                                 item.badgeText === 'PN' ? 'text-pink-500' : 'text-brand-orange'
                               }`}>
@@ -219,14 +219,14 @@ export default function CartDrawer({
                               <div className="flex items-center gap-1 bg-brand-dark border border-brand-border rounded-lg p-0.5">
                                 <button 
                                   onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                                  className="p-1 rounded hover:bg-brand-card text-brand-muted hover:text-white transition-colors"
+                                  className="p-1 rounded hover:bg-brand-card text-brand-muted hover:text-brand-orange transition-colors"
                                 >
                                   <Minus className="w-3 h-3" />
                                 </button>
-                                <span className="w-6 text-center text-xs font-bold text-white">{item.quantity}</span>
+                                <span className="w-6 text-center text-xs font-bold text-brand-text">{item.quantity}</span>
                                 <button 
                                   onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                                  className="p-1 rounded hover:bg-brand-card text-brand-muted hover:text-white transition-colors"
+                                  className="p-1 rounded hover:bg-brand-card text-brand-muted hover:text-brand-orange transition-colors"
                                 >
                                   <Plus className="w-3 h-3" />
                                 </button>
@@ -257,7 +257,7 @@ export default function CartDrawer({
                 >
                   {/* Delivery / Pickup Tabs */}
                   <div className="space-y-2">
-                    <label className="text-xs font-extrabold text-white uppercase tracking-wider block">Método de Entrega</label>
+                    <label className="text-xs font-extrabold text-brand-text uppercase tracking-wider block">Método de Entrega</label>
                     <div className="grid grid-cols-2 gap-3">
                       <button
                         type="button"
@@ -295,14 +295,14 @@ export default function CartDrawer({
                       
                       {/* Faculty Dropdown */}
                       <div className="space-y-1.5">
-                        <label className="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-1.5">
+                        <label className="text-xs font-extrabold text-brand-text uppercase tracking-wider flex items-center gap-1.5">
                           <MapPin className="w-3.5 h-3.5 text-brand-orange" />
                           Facultad o Edificio
                         </label>
                         <select
-                          value={selectedFaculty}
-                          onChange={(e) => setSelectedFaculty(e.target.value)}
-                          className="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-orange"
+                           value={selectedFaculty}
+                           onChange={(e) => setSelectedFaculty(e.target.value)}
+                           className="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-brand-text focus:outline-none focus:border-brand-orange"
                         >
                           <option value="Facultad de Ciencias Técnicas">Facultad de Ciencias Técnicas</option>
                           <option value="Facultad de Medicina">Facultad de Medicina</option>
@@ -314,30 +314,30 @@ export default function CartDrawer({
                       {/* Floor and Classroom Inputs */}
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1.5">
-                          <label className="text-xs font-extrabold text-white uppercase tracking-wider block">Piso / Nivel</label>
+                          <label className="text-xs font-extrabold text-brand-text uppercase tracking-wider block">Piso / Nivel</label>
                           <input
                             type="text"
                             placeholder="Ej. Piso 2, PB"
                             value={floorLevel}
                             onChange={(e) => setFloorLevel(e.target.value)}
-                            className="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-orange"
+                            className="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-brand-text focus:outline-none focus:border-brand-orange"
                           />
                         </div>
                         <div className="space-y-1.5">
-                          <label className="text-xs font-extrabold text-white uppercase tracking-wider block">Aula / Oficina</label>
+                          <label className="text-xs font-extrabold text-brand-text uppercase tracking-wider block">Aula / Oficina</label>
                           <input
                             type="text"
                             placeholder="Ej. Aula 304, Lab"
                             value={classroomOffice}
                             onChange={(e) => setClassroomOffice(e.target.value)}
-                            className="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-orange"
+                            className="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-brand-text focus:outline-none focus:border-brand-orange"
                           />
                         </div>
                       </div>
 
                       {/* Additional Delivery Notes */}
                       <div className="space-y-1.5">
-                        <label className="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-1.5">
+                        <label className="text-xs font-extrabold text-brand-text uppercase tracking-wider flex items-center gap-1.5">
                           <MessageSquare className="w-3.5 h-3.5 text-brand-orange" />
                           Indicaciones de Entrega
                         </label>
@@ -346,7 +346,7 @@ export default function CartDrawer({
                           value={deliveryNotes}
                           onChange={(e) => setDeliveryNotes(e.target.value)}
                           rows="2"
-                          className="w-full bg-brand-dark/50 border border-brand-border rounded-xl p-3 text-xs text-white placeholder-brand-muted/40 focus:outline-none focus:border-brand-orange"
+                          className="w-full bg-brand-dark/50 border border-brand-border rounded-xl p-3 text-xs text-brand-text placeholder-brand-muted/40 focus:outline-none focus:border-brand-orange"
                         ></textarea>
                       </div>
 
@@ -356,7 +356,7 @@ export default function CartDrawer({
                     <div className="p-4 bg-brand-dark/40 border border-brand-border/60 rounded-2xl flex gap-3 text-left">
                       <Info className="w-5 h-5 text-brand-orange shrink-0 mt-0.5" />
                       <div className="space-y-1">
-                        <p className="text-xs font-bold text-white">Retiro Directo</p>
+                        <p className="text-xs font-bold text-brand-text">Retiro Directo</p>
                         <p className="text-[11px] text-brand-muted leading-relaxed">
                           Tu pedido estará listo para retirar en el local correspondiente ubicado dentro del campus de la UIDE. Te enviaremos una notificación cuando esté preparado.
                         </p>
@@ -383,12 +383,12 @@ export default function CartDrawer({
                       placeholder="Código de cupón (AJIGO20)"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
-                      className="w-full bg-brand-dark border border-brand-border rounded-xl py-2 pl-9 pr-3 text-xs text-white placeholder-brand-muted/40 uppercase focus:outline-none focus:border-brand-orange"
+                      className="w-full bg-brand-dark border border-brand-border rounded-xl py-2 pl-9 pr-3 text-xs text-brand-text placeholder-brand-muted/40 uppercase focus:outline-none focus:border-brand-orange"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="bg-brand-card hover:bg-brand-dark text-white border border-brand-border hover:border-brand-orange/40 text-xs font-bold px-4 py-2 rounded-xl transition-all"
+                    className="bg-brand-card hover:bg-brand-dark text-brand-text border border-brand-border hover:border-brand-orange/40 text-xs font-bold px-4 py-2 rounded-xl transition-all"
                   >
                     Aplicar
                   </button>
@@ -434,7 +434,7 @@ export default function CartDrawer({
                   <span>S/ {tax.toFixed(2)}</span>
                 </div>
 
-                <div className="flex justify-between text-base font-extrabold text-white border-t border-brand-border/40 pt-3 mt-1">
+                <div className="flex justify-between text-base font-extrabold text-brand-text border-t border-brand-border/40 pt-3 mt-1">
                   <span>Total a pagar</span>
                   <span className="text-brand-orange">S/ {total.toFixed(2)}</span>
                 </div>

@@ -67,7 +67,7 @@ export default function OrderTracker({
         <span className="text-[10px] bg-brand-orange/15 text-brand-orange px-3 py-1 rounded-full font-bold uppercase tracking-widest border border-brand-orange/10">
           SEGUIMIENTO DE PEDIDO (UIDE)
         </span>
-        <h2 className="text-3xl font-extrabold text-white mt-3">Tu orden en camino</h2>
+        <h2 className="text-3xl font-extrabold text-brand-text mt-3">Tu orden en camino</h2>
         <p className="text-xs text-brand-muted mt-2">
           Código de seguimiento: <span className="text-brand-orange font-bold font-mono">{orderDetails?.id || '#AG-000000'}</span>
         </p>
@@ -88,12 +88,12 @@ export default function OrderTracker({
                 </div>
                 <div>
                   <p className="text-[10px] text-brand-muted font-bold uppercase tracking-wider">Tiempo Estimado</p>
-                  <p className="text-sm font-extrabold text-white">Variable (Según demanda)</p>
+                  <p className="text-sm font-extrabold text-brand-text">Variable (Según demanda)</p>
                 </div>
               </div>
               <div className="text-right">
                 <p className="text-[10px] text-brand-muted font-bold uppercase tracking-wider">Destino</p>
-                <p className="text-xs font-bold text-white max-w-[200px] truncate">
+                <p className="text-xs font-bold text-brand-text max-w-[200px] truncate">
                   {orderDetails?.deliveryDetails?.method === 'pickup' ? 'Retiro en Local' : deliveryAddress}
                 </p>
               </div>
@@ -136,7 +136,7 @@ export default function OrderTracker({
                     {/* Step details */}
                     <div className="flex-1">
                       <h4 className={`text-sm font-extrabold transition-colors duration-300 ${
-                        isActive ? 'text-brand-orange' : isCompleted ? 'text-white/80' : 'text-brand-muted'
+                        isActive ? 'text-brand-orange' : isCompleted ? 'text-brand-text/80' : 'text-brand-muted'
                       }`}>
                         {step.title}
                       </h4>
@@ -177,7 +177,7 @@ export default function OrderTracker({
           {/* Delivery / Takeaway Details Card */}
           <div className="glass-effect rounded-3xl p-6 md:p-8 shadow-xl text-left border border-brand-border/60 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow"></div>
-            <h3 className="text-xs font-extrabold text-white uppercase tracking-wider mb-4 flex items-center gap-1.5">
+            <h3 className="text-xs font-extrabold text-brand-text uppercase tracking-wider mb-4 flex items-center gap-1.5">
               <MapPin className="w-3.5 h-3.5 text-brand-orange" />
               Detalles de Entrega (Campus UIDE)
             </h3>
@@ -222,7 +222,7 @@ export default function OrderTracker({
           <div className="glass-effect rounded-3xl p-6 shadow-xl text-center border border-brand-border/60 relative overflow-hidden">
             <div className="absolute top-[-30px] left-[-30px] w-24 h-24 rounded-full bg-brand-orange/5 blur-xl pointer-events-none"></div>
             
-            <h3 className="text-xs font-extrabold text-white uppercase tracking-wider mb-4 flex items-center justify-center gap-1.5">
+            <h3 className="text-xs font-extrabold text-brand-text uppercase tracking-wider mb-4 flex items-center justify-center gap-1.5">
               <QrCode className="w-4 h-4 text-brand-orange animate-pulse" />
               Código QR de Validación
             </h3>
@@ -249,7 +249,7 @@ export default function OrderTracker({
             <div className="glass-effect rounded-3xl p-6 shadow-xl relative overflow-hidden text-left">
               <div className="absolute top-[-30px] right-[-30px] w-24 h-24 rounded-full bg-brand-orange/5 blur-xl pointer-events-none"></div>
               
-              <h3 className="text-xs font-extrabold text-white uppercase tracking-wider mb-4 flex items-center gap-1.5">
+              <h3 className="text-xs font-extrabold text-brand-text uppercase tracking-wider mb-4 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-brand-yellow" />
                 Tu Repartidor Asignado
               </h3>
@@ -257,12 +257,14 @@ export default function OrderTracker({
               {/* Avatar & Vehicle */}
               <div className="flex items-center gap-4 mb-5">
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-orange to-brand-red text-white flex items-center justify-center font-extrabold text-xl shadow-md shrink-0">
-                  CM
+                  {(orderDetails?.driverName || 'Carlos Mendoza').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <h4 className="text-sm font-bold text-white">Carlos Mendoza</h4>
-                  <p className="text-[10px] text-brand-yellow font-bold mt-0.5">★ 4.9 Repartidor Pro</p>
-                  <p className="text-[10px] text-brand-muted mt-1 truncate">Motocicleta Honda (AJI-990)</p>
+                  <h4 className="text-sm font-bold text-brand-text">{orderDetails?.driverName || 'Carlos Mendoza'}</h4>
+                  <p className="text-[10px] text-brand-yellow font-bold mt-0.5">
+                    {orderDetails?.driverName ? '★ 5.0 Repartidor Activo' : '★ 4.9 Repartidor Pro'}
+                  </p>
+                  <p className="text-[10px] text-brand-muted mt-1 truncate">{orderDetails?.driverVehicle || 'Motocicleta Honda (AJI-990)'}</p>
                 </div>
               </div>
 
@@ -288,7 +290,7 @@ export default function OrderTracker({
 
           {/* Receipt Summary Card */}
           <div className="glass-effect rounded-3xl p-6 shadow-xl text-left relative">
-            <h3 className="text-xs font-extrabold text-white uppercase tracking-wider mb-4 flex items-center gap-1.5">
+            <h3 className="text-xs font-extrabold text-brand-text uppercase tracking-wider mb-4 flex items-center gap-1.5">
               <Receipt className="w-3.5 h-3.5 text-brand-orange" />
               Resumen de Compra
             </h3>
@@ -322,7 +324,7 @@ export default function OrderTracker({
                 <span>{orderDetails?.deliveryFee === 0 ? 'Gratis' : `S/ ${orderDetails?.deliveryFee?.toFixed(2)}`}</span>
               </div>
 
-              <div className="flex justify-between text-sm font-extrabold text-white border-t border-brand-border/40 pt-3">
+              <div className="flex justify-between text-sm font-extrabold text-brand-text border-t border-brand-border/40 pt-3">
                 <span>Total pagado</span>
                 <span className="text-brand-orange">S/ {orderDetails?.total?.toFixed(2) || '0.00'}</span>
               </div>
@@ -332,7 +334,7 @@ export default function OrderTracker({
           {/* Menu Redirect Button */}
           <button
             onClick={onBackToMenu}
-            className="w-full bg-brand-card hover:bg-brand-dark border border-brand-border hover:border-brand-orange text-white py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-xs transition-all duration-300"
+            className="w-full bg-brand-card hover:bg-brand-dark border border-brand-border hover:border-brand-orange text-brand-text py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-xs transition-all duration-300"
           >
             <Home className="w-4 h-4 text-brand-orange" />
             <span>Volver al Inicio</span>

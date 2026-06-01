@@ -57,16 +57,16 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
 
   const getStatusLabel = (status) => {
     switch (status) {
-      case 0: return { text: 'Recibido', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' };
-      case 1: return { text: 'En Preparación', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' };
-      case 2: return { text: 'Listo / En Camino', color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' };
-      case 3: return { text: 'Entregado', color: 'text-green-400 bg-green-500/10 border-green-500/20' };
+      case 0: return { text: 'Recibido', color: 'text-blue-600 bg-blue-50 border-blue-100' };
+      case 1: return { text: 'En Preparación', color: 'text-amber-600 bg-amber-50 border-amber-100' };
+      case 2: return { text: 'Listo / En Camino', color: 'text-indigo-600 bg-indigo-50 border-indigo-100' };
+      case 3: return { text: 'Entregado', color: 'text-green-600 bg-green-50 border-green-100' };
       default: return { text: 'Pendiente', color: 'text-brand-muted bg-brand-border/10' };
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 py-10 text-brand-text">
+    <div className="max-w-[95%] xl:max-w-[90%] 2xl:max-w-[1440px] mx-auto px-4 md:px-8 py-10 text-brand-text">
       
       {/* Header and Restaurant Selector */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-brand-border/40 pb-6 mb-8 text-left">
@@ -74,7 +74,7 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
           <span className="text-[10px] bg-brand-orange/15 text-brand-orange px-3 py-1 rounded-full font-bold uppercase tracking-widest border border-brand-orange/10">
             PORTAL DE SOCIOS UIDE
           </span>
-          <h2 className="text-3xl font-extrabold text-white mt-3">Gestión de Restaurante</h2>
+          <h2 className="text-3xl font-extrabold text-brand-text mt-3">Gestión de Restaurante</h2>
           <p className="text-xs text-brand-muted mt-1">Lleva el control de pedidos, despachos de delivery y finanzas del local.</p>
         </div>
 
@@ -89,7 +89,7 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
                   ? r === 'Piedra Negra'
                     ? 'bg-pink-500 border-transparent text-white shadow-lg shadow-pink-500/10'
                     : 'bg-brand-orange border-transparent text-white shadow-lg shadow-brand-orange/10'
-                  : 'bg-brand-card hover:bg-brand-card/85 border-brand-border text-brand-muted hover:text-white'
+                  : 'bg-brand-card hover:bg-brand-card/85 border-brand-border text-brand-muted hover:text-brand-orange'
               }`}
             >
               {r}
@@ -104,8 +104,8 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
           onClick={() => setActiveTab('deliveries')}
           className={`flex items-center gap-2 pb-2 text-sm font-bold border-b-2 transition-all ${
             activeTab === 'deliveries' 
-              ? selectedRestaurant === 'Piedra Negra' ? 'border-pink-500 text-pink-400' : 'border-brand-orange text-brand-orange' 
-              : 'border-transparent text-brand-muted hover:text-white'
+              ? selectedRestaurant === 'Piedra Negra' ? 'border-pink-500 text-pink-500' : 'border-brand-orange text-brand-orange' 
+              : 'border-transparent text-brand-muted hover:text-brand-orange'
           }`}
         >
           <ShoppingBag className="w-4 h-4" />
@@ -115,8 +115,8 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
           onClick={() => setActiveTab('accounting')}
           className={`flex items-center gap-2 pb-2 text-sm font-bold border-b-2 transition-all ${
             activeTab === 'accounting' 
-              ? selectedRestaurant === 'Piedra Negra' ? 'border-pink-500 text-pink-400' : 'border-brand-orange text-brand-orange' 
-              : 'border-transparent text-brand-muted hover:text-white'
+              ? selectedRestaurant === 'Piedra Negra' ? 'border-pink-500 text-pink-500' : 'border-brand-orange text-brand-orange' 
+              : 'border-transparent text-brand-muted hover:text-brand-orange'
           }`}
         >
           <TrendingUp className="w-4 h-4" />
@@ -129,9 +129,9 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
         /* DELIVERIES MANAGEMENT TAB */
         <div className="space-y-6">
           {activeOrders.length === 0 ? (
-            <div className="text-center py-20 bg-brand-card/20 rounded-3xl border border-dashed border-brand-border flex flex-col items-center justify-center">
+            <div className="text-center py-20 bg-brand-card/25 rounded-3xl border border-dashed border-brand-border flex flex-col items-center justify-center">
               <Clock className="w-10 h-10 text-brand-muted mb-4" />
-              <h3 className="text-lg font-bold text-white mb-1">Sin pedidos activos</h3>
+              <h3 className="text-lg font-bold text-brand-text mb-1">Sin pedidos activos</h3>
               <p className="text-brand-muted text-xs max-w-xs mx-auto">
                 No hay transacciones pendientes para {selectedRestaurant} en este momento.
               </p>
@@ -145,7 +145,7 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
                 return (
                   <div 
                     key={order.id} 
-                    className={`glass-effect rounded-3xl border p-6 flex flex-col justify-between gap-6 ${
+                    className={`glass-effect rounded-3xl border p-6 flex flex-col justify-between gap-6 transition-all duration-300 bg-white shadow-sm border-brand-border/60 ${
                       selectedRestaurant === 'Piedra Negra' ? 'hover:border-pink-500/30' : 'hover:border-brand-orange/30'
                     }`}
                   >
@@ -153,8 +153,8 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
                     <div className="flex justify-between items-start border-b border-brand-border/40 pb-4 text-left">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-black text-white">{order.id}</span>
-                          <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${label.color}`}>
+                          <span className="text-sm font-black text-brand-text">{order.id}</span>
+                          <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border ${label.color}`}>
                             {label.text}
                           </span>
                         </div>
@@ -162,7 +162,7 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
                       </div>
                       <div className="text-right">
                         <span className="text-[10px] text-brand-muted block uppercase font-bold tracking-wider">TOTAL PEDIDO</span>
-                        <span className="text-sm font-black text-white">S/ {order.total.toFixed(2)}</span>
+                        <span className="text-sm font-black text-brand-orange">S/ {order.total.toFixed(2)}</span>
                       </div>
                     </div>
 
@@ -186,7 +186,7 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
                         <span className="text-[10px] text-brand-muted block uppercase font-bold tracking-wider mb-2">Destino de Entrega</span>
                         {isDelivery ? (
                           <div className="space-y-1">
-                            <p className="font-bold text-white flex items-center gap-1">
+                            <p className="font-bold text-brand-text flex items-center gap-1">
                               <MapPin className="w-3.5 h-3.5 text-brand-red shrink-0" />
                               {order.deliveryDetails.faculty}
                             </p>
@@ -201,7 +201,7 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
                           </div>
                         ) : (
                           <div className="space-y-1">
-                            <p className="font-bold text-green-500 flex items-center gap-1">
+                            <p className="font-bold text-green-600 flex items-center gap-1">
                               <Store className="w-3.5 h-3.5 shrink-0" />
                               Retiro en Local
                             </p>
@@ -220,7 +220,7 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
                         {order.status === 0 && (
                           <button
                             onClick={() => onUpdateOrderStatus(order.id, 1)}
-                            className="bg-brand-card hover:bg-brand-dark text-[10px] font-bold text-white border border-brand-border px-3.5 py-2 rounded-xl transition-all"
+                            className="bg-brand-card hover:bg-brand-dark/20 text-[10px] font-bold text-brand-text border border-brand-border px-3.5 py-2 rounded-xl transition-all"
                           >
                             Empezar Cocción
                           </button>
@@ -228,19 +228,19 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
                         {order.status === 1 && (
                           <button
                             onClick={() => onUpdateOrderStatus(order.id, 2)}
-                            className="bg-brand-orange hover:bg-brand-orange/90 text-[10px] font-bold text-white px-3.5 py-2 rounded-xl transition-all"
+                            className="bg-brand-orange hover:bg-brand-orange/90 text-[10px] font-bold text-white px-3.5 py-2 rounded-xl transition-all shadow-sm"
                           >
                             Listo para Despacho
                           </button>
                         )}
                         {order.status === 2 && (
-                          <span className="text-[10px] text-brand-muted flex items-center gap-1.5 py-1.5 px-3">
-                            <Clock className="w-3.5 h-3.5" />
-                            Esperando confirmación
+                          <span className="text-[10px] text-brand-muted flex items-center gap-1.5 py-1.5 px-3 font-semibold">
+                            <Clock className="w-3.5 h-3.5 text-brand-orange animate-spin" style={{ animationDuration: '4s' }} />
+                            Esperando repartidor / confirmación
                           </span>
                         )}
                         {order.status === 3 && (
-                          <span className="text-[10px] text-green-500 flex items-center gap-1.5 py-1.5 px-3 font-bold bg-green-500/10 border border-green-500/20 rounded-xl">
+                          <span className="text-[10px] text-green-600 flex items-center gap-1.5 py-1.5 px-3 font-bold bg-green-500/10 border border-green-500/20 rounded-xl">
                             <CheckCircle2 className="w-3.5 h-3.5" />
                             Completado
                           </span>
@@ -255,13 +255,13 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
                               onUpdateOrderStatus(order.id, 3);
                             }
                           }}
-                          className={`flex items-center gap-1.5 py-2 px-3.5 rounded-xl text-[10px] font-bold text-white transition-all ${
+                          className={`flex items-center gap-1.5 py-2 px-3.5 rounded-xl text-[10px] font-bold transition-all text-white ${
                             selectedRestaurant === 'Piedra Negra'
                               ? 'bg-pink-600 hover:bg-pink-500'
-                              : 'bg-brand-card hover:bg-brand-dark border border-brand-border'
+                              : 'bg-brand-orange hover:bg-brand-orange/90 shadow-md shadow-brand-orange/15'
                           }`}
                         >
-                          <QrCode className="w-4 h-4 text-brand-orange" />
+                          <QrCode className="w-4 h-4" />
                           Escanear QR
                         </button>
                       ) : (
@@ -280,43 +280,43 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
           
           {/* Top Finance Metrics Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="glass-effect rounded-3xl p-6 border border-brand-border/60">
+            <div className="glass-effect rounded-3xl p-6 bg-white border border-brand-border/60">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] text-brand-muted font-bold uppercase tracking-wider">Ventas Totales</span>
                 <DollarSign className="w-5 h-5 text-green-500" />
               </div>
-              <p className="text-2xl font-black text-white mt-3">S/ {totalSales.toFixed(2)}</p>
+              <p className="text-2xl font-black text-brand-text mt-3">S/ {totalSales.toFixed(2)}</p>
               <p className="text-[10px] text-green-500 font-bold mt-1.5 flex items-center gap-1">
                 <span>+12.4%</span> vs semana anterior
               </p>
             </div>
 
-            <div className="glass-effect rounded-3xl p-6 border border-brand-border/60">
+            <div className="glass-effect rounded-3xl p-6 bg-white border border-brand-border/60">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] text-brand-muted font-bold uppercase tracking-wider">Gastos de Operación</span>
                 <TrendingDown className="w-5 h-5 text-brand-red" />
               </div>
-              <p className="text-2xl font-black text-white mt-3">S/ {totalExpenses.toFixed(2)}</p>
+              <p className="text-2xl font-black text-brand-text mt-3">S/ {totalExpenses.toFixed(2)}</p>
               <p className="text-[10px] text-brand-muted mt-1.5">Materia prima e insumos UIDE</p>
             </div>
 
-            <div className="glass-effect rounded-3xl p-6 border border-brand-border/60">
+            <div className="glass-effect rounded-3xl p-6 bg-white border border-brand-border/60">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] text-brand-muted font-bold uppercase tracking-wider">Ganancia Neta</span>
                 <TrendingUp className="w-5 h-5 text-brand-orange" />
               </div>
-              <p className={`text-2xl font-black mt-3 ${netEarnings >= 0 ? 'text-white' : 'text-brand-red'}`}>
+              <p className={`text-2xl font-black mt-3 ${netEarnings >= 0 ? 'text-brand-text' : 'text-brand-red'}`}>
                 S/ {netEarnings.toFixed(2)}
               </p>
               <p className="text-[10px] text-brand-muted mt-1.5">Neto después de deducir gastos</p>
             </div>
 
-            <div className="glass-effect rounded-3xl p-6 border border-brand-border/60">
+            <div className="glass-effect rounded-3xl p-6 bg-white border border-brand-border/60">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] text-brand-muted font-bold uppercase tracking-wider">Ticket Promedio</span>
                 <BarChart3 className="w-5 h-5 text-brand-yellow" />
               </div>
-              <p className="text-2xl font-black text-white mt-3">S/ {averageTicket.toFixed(2)}</p>
+              <p className="text-2xl font-black text-brand-text mt-3">S/ {averageTicket.toFixed(2)}</p>
               <p className="text-[10px] text-brand-muted mt-1.5">Valor medio por pedido</p>
             </div>
           </div>
@@ -326,8 +326,8 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
             <div className="lg:col-span-2 space-y-6">
               
               {/* Sales by Hour Graphic mockup */}
-              <div className="glass-effect rounded-3xl p-6 md:p-8 border border-brand-border/60">
-                <h3 className="text-sm font-extrabold text-white uppercase tracking-wider mb-6">Picos de Demanda por Hora (Campus)</h3>
+              <div className="glass-effect rounded-3xl p-6 md:p-8 bg-white border border-brand-border/60">
+                <h3 className="text-sm font-extrabold text-brand-text uppercase tracking-wider mb-6">Picos de Demanda por Hora (Campus)</h3>
                 
                 <div className="h-44 flex items-end justify-between gap-3 border-b border-brand-border/30 pb-2 relative">
                   {chartData.map((data, index) => {
@@ -357,8 +357,8 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
               </div>
 
               {/* Transactions Ledger Table */}
-              <div className="glass-effect rounded-3xl p-6 md:p-8 border border-brand-border/60">
-                <h3 className="text-sm font-extrabold text-white uppercase tracking-wider mb-6">Historial de Transacciones Recientes</h3>
+              <div className="glass-effect rounded-3xl p-6 md:p-8 bg-white border border-brand-border/60">
+                <h3 className="text-sm font-extrabold text-brand-text uppercase tracking-wider mb-6">Historial de Transacciones Recientes</h3>
                 
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs text-left">
@@ -373,12 +373,12 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
                     <tbody className="divide-y divide-brand-border/40 text-brand-text">
                       {activeOrders.map((order) => (
                         <tr key={order.id} className="hover:bg-brand-dark/25">
-                          <td className="py-3 font-bold text-white">{order.id}</td>
+                          <td className="py-3 font-bold text-brand-text">{order.id}</td>
                           <td className="py-3 text-brand-muted">{order.createdAt}</td>
                           <td className="py-3">
                             <span className="capitalize">{order.deliveryDetails?.method === 'delivery' ? 'Delivery' : 'Retiro'}</span>
                           </td>
-                          <td className="py-3 text-right font-extrabold text-white">S/ {order.total.toFixed(2)}</td>
+                          <td className="py-3 text-right font-extrabold text-brand-text">S/ {order.total.toFixed(2)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -392,8 +392,8 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
             <div className="space-y-6">
               
               {/* Add Expense Card Form */}
-              <div className="glass-effect rounded-3xl p-6 border border-brand-border/60">
-                <h3 className="text-sm font-extrabold text-white uppercase tracking-wider mb-4">Registrar Gasto de Operación</h3>
+              <div className="glass-effect rounded-3xl p-6 bg-white border border-brand-border/60">
+                <h3 className="text-sm font-extrabold text-brand-text uppercase tracking-wider mb-4">Registrar Gasto de Operación</h3>
                 
                 <form onSubmit={handleAddExpense} className="space-y-4">
                   <div className="space-y-1.5">
@@ -403,7 +403,7 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
                       placeholder="Ej. Insumos pastelería, envases"
                       value={expenseName}
                       onChange={(e) => setExpenseName(e.target.value)}
-                      className="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-orange"
+                      className="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-brand-text focus:outline-none focus:border-brand-orange"
                       required
                     />
                   </div>
@@ -416,14 +416,14 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
                       placeholder="0.00"
                       value={expenseAmount}
                       onChange={(e) => setExpenseAmount(e.target.value)}
-                      className="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-white focus:outline-none focus:border-brand-orange"
+                      className="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-brand-text focus:outline-none focus:border-brand-orange"
                       required
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className={`w-full font-bold text-xs py-3 px-4 rounded-xl flex items-center justify-center gap-1.5 text-white transition duration-300 ${
+                    className={`w-full font-bold text-xs py-3 px-4 rounded-xl flex items-center justify-center gap-1.5 text-white transition duration-300 cursor-pointer ${
                       selectedRestaurant === 'Piedra Negra'
                         ? 'bg-pink-600 hover:bg-pink-500'
                         : 'bg-gradient-to-r from-brand-red to-brand-orange hover:opacity-95'
@@ -436,8 +436,8 @@ export default function RestaurantAdmin({ orders, onUpdateOrderStatus }) {
               </div>
 
               {/* Expenses List Ledger */}
-              <div className="glass-effect rounded-3xl p-6 border border-brand-border/60">
-                <h3 className="text-sm font-extrabold text-white uppercase tracking-wider mb-4">Registro de Gastos</h3>
+              <div className="glass-effect rounded-3xl p-6 bg-white border border-brand-border/60">
+                <h3 className="text-sm font-extrabold text-brand-text uppercase tracking-wider mb-4">Registro de Gastos</h3>
                 
                 <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
                   {restaurantExpenses.length === 0 ? (

@@ -1,18 +1,78 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Star, Clock, ArrowRight } from 'lucide-react';
 import { MOCK_RESTAURANTS } from './RestaurantGrid';
 
 export default function RestaurantCarousel({ onSelectRestaurant }) {
   const scrollContainerRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const totalItems = MOCK_RESTAURANTS.length;
 
-  const scroll = (direction) => {
+  const scrollToCard = (index) => {
     if (scrollContainerRef.current) {
-      const { scrollLeft, clientWidth } = scrollContainerRef.current;
-      const scrollAmount = clientWidth * 0.75;
-      scrollContainerRef.current.scrollTo({
-        left: direction === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
-        behavior: 'smooth'
-      });
+      const container = scrollContainerRef.current;
+      const cards = container.children;
+      // Filter out non-card elements (like hidden elements)
+      const cardElements = Array.from(cards).filter(el => el.tagName === 'DIV' && el.id.startsWith('card-'));
+      
+      if (cardElements && cardElements[index]) {
+        const targetScroll = cardElements[index].offsetLeft - container.offsetLeft - 16; // subtract a bit of padding
+        container.scrollTo({
+          left: targetScroll,
+          behavior: 'smooth'
+        });
+        setActiveIndex(index);
+      }
+    }
+  };
+
+  const handleNext = () => {
+    const nextIndex = (activeIndex + 1) % totalItems;
+    scrollToCard(nextIndex);
+  };
+
+  const handlePrev = () => {
+    const prevIndex = (activeIndex - 1 + totalItems) % totalItems;
+    scrollToCard(prevIndex);
+  };
+
+  // Autoplay functionality
+  useEffect(() => {
+    if (isHovered) return;
+    
+    const interval = setInterval(() => {
+      handleNext();
+    }, 4500); // Normal, comfortable auto-rotation period
+
+    return () => clearInterval(interval);
+  }, [activeIndex, isHovered]);
+
+  // Sync index on manual scroll
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const scrollLeft = container.scrollLeft;
+      
+      const cards = container.children;
+      const cardElements = Array.from(cards).filter(el => el.tagName === 'DIV' && el.id.startsWith('card-'));
+      
+      if (cardElements && cardElements.length > 0) {
+        let closestIndex = 0;
+        let minDiff = Infinity;
+        
+        cardElements.forEach((card, idx) => {
+          const cardOffset = card.offsetLeft - container.offsetLeft - 16;
+          const diff = Math.abs(cardOffset - scrollLeft);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestIndex = idx;
+          }
+        });
+        
+        if (closestIndex !== activeIndex) {
+          setActiveIndex(closestIndex);
+        }
+      }
     }
   };
 
@@ -68,11 +128,15 @@ export default function RestaurantCarousel({ onSelectRestaurant }) {
   };
 
   return (
-    <div className="w-full py-8 select-none bg-brand-dark/20 border-b border-brand-border/40 relative">
+    <div 
+      className="w-full py-8 select-none bg-brand-dark/20 border-b border-brand-border/40 relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         
         {/* Header Area */}
-        <div className="flex justify-between items-end mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6">
           <div className="text-left">
             <span className="text-[10px] bg-brand-orange/10 text-brand-orange px-3 py-1 rounded-full font-extrabold uppercase tracking-widest border border-brand-orange/15">
               EXPLORAR EL CAMPUS
@@ -81,21 +145,23 @@ export default function RestaurantCarousel({ onSelectRestaurant }) {
               Locales Gastronómicos UIDE
             </h2>
             <p className="text-xs text-brand-muted mt-1">
-              Desliza y selecciona un local para ver su menú y revisar tus pedidos en curso.
+              Desliza y selecciona un local para ver su menú y ordenar tus antojos calientes.
             </p>
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 self-end sm:self-auto">
             <button
-              onClick={() => scroll('left')}
+              onClick={handlePrev}
               className="p-2 rounded-xl bg-white border border-brand-border hover:border-brand-orange text-brand-muted hover:text-brand-orange shadow-sm hover:shadow transition-all duration-200"
+              aria-label="Anterior"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
-              onClick={() => scroll('right')}
+              onClick={handleNext}
               className="p-2 rounded-xl bg-white border border-brand-border hover:border-brand-orange text-brand-muted hover:text-brand-orange shadow-sm hover:shadow transition-all duration-200"
+              aria-label="Siguiente"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -105,16 +171,18 @@ export default function RestaurantCarousel({ onSelectRestaurant }) {
         {/* Carousel Container */}
         <div
           ref={scrollContainerRef}
+          onScroll={handleScroll}
           className="flex gap-6 overflow-x-auto pb-4 scrollbar-none scroll-smooth snap-x snap-mandatory pr-4"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {MOCK_RESTAURANTS.map((restaurant) => {
+          {MOCK_RESTAURANTS.map((restaurant, idx) => {
             const theme = getThemeColors(restaurant.id);
             return (
               <div
                 key={restaurant.id}
+                id={`card-${restaurant.id}`}
                 onClick={() => onSelectRestaurant(restaurant.id)}
-                className={`snap-start shrink-0 w-[290px] md:w-[350px] bg-white border border-brand-border rounded-3xl p-6 cursor-pointer transition-all duration-300 ${theme.borderHover} ${theme.glow} shadow-sm hover:shadow-xl flex flex-col justify-between gap-5 group`}
+                className={`snap-start shrink-0 w-[290px] md:w-[350px] bg-white border border-brand-border rounded-3xl p-6 cursor-pointer transition-all duration-300 ${theme.borderHover} ${theme.glow} shadow-sm hover:shadow-xl hover:-translate-y-1.5 flex flex-col justify-between gap-5 group`}
               >
                 <div>
                   {/* Top line with Star and Tagline */}
@@ -176,6 +244,22 @@ export default function RestaurantCarousel({ onSelectRestaurant }) {
               </div>
             );
           })}
+        </div>
+
+        {/* Dynamic Dot Indicators */}
+        <div className="flex justify-center gap-2 mt-4">
+          {MOCK_RESTAURANTS.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => scrollToCard(idx)}
+              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                activeIndex === idx 
+                  ? 'bg-brand-orange w-6 shadow-sm shadow-brand-orange/20' 
+                  : 'bg-brand-border hover:bg-brand-orange/40'
+              }`}
+              aria-label={`Ir al restaurante ${idx + 1}`}
+            />
+          ))}
         </div>
 
       </div>

@@ -34,7 +34,7 @@ export default function Navbar({
 
   return (
     <nav className="sticky top-0 z-40 w-full glass-effect border-b border-brand-border px-4 py-3 md:px-8">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div className="max-w-[95%] xl:max-w-[90%] 2xl:max-w-[1440px] mx-auto flex items-center justify-between gap-4">
         
         {/* Left: Brand Logo & Delivery Location */}
         <div className="flex items-center gap-6">
@@ -90,40 +90,44 @@ export default function Navbar({
         </div>
 
         {/* Center: Search bar */}
-        <div className="flex-1 max-w-md hidden md:block">
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-muted" />
-            <input
-              type="text"
-              placeholder="Buscar restaurantes, platos o antojos..."
-              value={searchTerm}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full bg-brand-dark border border-brand-border rounded-full py-2 pl-10 pr-4 text-sm text-brand-text placeholder-brand-muted/50 focus:outline-none focus:border-brand-orange"
-            />
+        {viewMode === 'customer' && (
+          <div className="flex-1 max-w-md hidden md:block">
+            <div className="relative">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-muted" />
+              <input
+                type="text"
+                placeholder="Buscar restaurantes, platos o antojos..."
+                value={searchTerm}
+                onChange={(e) => onSearchChange(e.target.value)}
+                className="w-full bg-brand-dark border border-brand-border rounded-full py-2 pl-10 pr-4 text-sm text-brand-text placeholder-brand-muted/50 focus:outline-none focus:border-brand-orange"
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Right: Actions (Cart, Notifications, View Mode, Profile) */}
         <div className="flex items-center gap-3">
           
           {/* Cart Icon */}
-          <button 
-            onClick={onCartToggle}
-            className="relative p-2.5 rounded-xl bg-brand-card/75 border border-brand-border hover:border-brand-orange hover:bg-brand-dark text-white transition-all flex items-center justify-center"
-          >
-            <ShoppingBag className="w-5 h-5 text-brand-text" />
-            {cartItemsCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-gradient-to-r from-brand-red to-brand-orange text-white text-[10px] font-bold w-5.5 h-5.5 rounded-full flex items-center justify-center border-2 border-brand-dark shadow-md">
-                {cartItemsCount}
-              </span>
-            )}
-          </button>
+          {viewMode === 'customer' && (
+            <button 
+              onClick={onCartToggle}
+              className="relative p-2.5 rounded-xl bg-brand-card/75 border border-brand-border hover:border-brand-orange hover:bg-brand-dark/20 text-brand-text transition-all flex items-center justify-center"
+            >
+              <ShoppingBag className="w-5 h-5 text-brand-text" />
+              {cartItemsCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-gradient-to-r from-brand-red to-brand-orange text-white text-[10px] font-bold w-5.5 h-5.5 rounded-full flex items-center justify-center border-2 border-brand-dark shadow-md">
+                  {cartItemsCount}
+                </span>
+              )}
+            </button>
+          )}
 
           {/* Notifications */}
           <div className="relative">
             <button 
               onClick={() => setShowNotifications(!showNotifications)}
-              className="p-2.5 rounded-xl bg-brand-card/75 border border-brand-border hover:border-brand-orange hover:bg-brand-dark text-brand-text hover:text-white transition-all flex items-center justify-center"
+              className="p-2.5 rounded-xl bg-brand-card/75 border border-brand-border hover:border-brand-orange hover:bg-brand-dark/20 text-brand-text hover:text-brand-orange transition-all flex items-center justify-center"
             >
               <Bell className="w-5 h-5" />
               <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-brand-red border border-brand-card"></span>
@@ -150,16 +154,30 @@ export default function Navbar({
             )}
           </div>
 
-          {/* Partner View Toggle Button */}
-          <button
-            onClick={onToggleViewMode}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-brand-orange/10 hover:bg-brand-orange/20 border border-brand-orange/20 hover:border-brand-orange text-brand-orange hover:text-brand-yellow font-extrabold text-[10px] uppercase tracking-wider transition-all duration-300"
-          >
-            <Monitor className="w-3.5 h-3.5" />
-            <span className="hidden xs:inline">
-              {viewMode === 'customer' ? 'Modo Socio' : 'Modo Cliente'}
-            </span>
-          </button>
+          {/* View Mode Segment Control (Cliente / Socio / Repartidor) */}
+          <div className="flex bg-slate-100/80 border border-brand-border rounded-xl p-0.5 shrink-0 select-none">
+            {[
+              { id: 'customer', label: 'Cliente' },
+              { id: 'admin', label: 'Socio' },
+              { id: 'driver', label: 'Repartidor' }
+            ].map((mode) => (
+              <button
+                key={mode.id}
+                onClick={() => {
+                  if (onToggleViewMode) {
+                    onToggleViewMode(mode.id);
+                  }
+                }}
+                className={`px-2.5 py-1.5 rounded-lg font-black text-[9px] uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                  viewMode === mode.id
+                    ? 'bg-gradient-to-r from-brand-red to-brand-orange text-white shadow-md'
+                    : 'text-brand-muted hover:text-brand-text hover:bg-slate-200/50'
+                }`}
+              >
+                {mode.label}
+              </button>
+            ))}
+          </div>
 
           <div className="h-5 w-[1px] bg-brand-border"></div>
 
@@ -213,6 +231,22 @@ export default function Navbar({
         </div>
 
       </div>
+
+      {/* Mobile Search Bar Row (renders below on small screens) */}
+      {viewMode === 'customer' && (
+        <div className="mt-3 max-w-[95%] mx-auto md:hidden">
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-muted" />
+            <input
+              type="text"
+              placeholder="Buscar platos o locales..."
+              value={searchTerm}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className="w-full bg-brand-dark border border-brand-border rounded-full py-2.5 pl-10 pr-4 text-xs text-brand-text placeholder-brand-muted/50 focus:outline-none focus:border-brand-orange"
+            />
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

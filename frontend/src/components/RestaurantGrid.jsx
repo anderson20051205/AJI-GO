@@ -281,7 +281,7 @@ export default function RestaurantGrid({
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 pb-16 pt-8 space-y-12">
+    <div className="max-w-[95%] xl:max-w-[90%] 2xl:max-w-[1440px] mx-auto px-4 md:px-8 pb-16 pt-8 space-y-12">
       
       {visibleRestaurants.map((restaurant) => {
         const isPinkTheme = restaurant.id === 'piedra-negra';

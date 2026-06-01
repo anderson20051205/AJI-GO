@@ -13,14 +13,14 @@ export default function Categories({ selectedCategory, onSelectCategory }) {
 
   return (
     <div className="w-full py-6 select-none border-b border-brand-border/20">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
+      <div className="max-w-[95%] xl:max-w-[90%] 2xl:max-w-[1440px] mx-auto px-4 md:px-8">
         
         {/* Title */}
         <div className="flex items-center gap-2 mb-4">
           <div className="p-1 rounded bg-brand-orange/15 text-brand-orange">
             <Store className="w-4 h-4" />
           </div>
-          <h3 className="text-sm font-extrabold text-white uppercase tracking-wider text-left">
+          <h3 className="text-sm font-extrabold text-brand-text uppercase tracking-wider text-left">
             Nuestros Locales en el Campus UIDE
           </h3>
         </div>

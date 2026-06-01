@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, MapPin, Sparkles, ShieldCheck, HelpCircle, ShoppingBag, UtensilsCrossed, Star, Clock } from 'lucide-react';
+import { Search, MapPin, Sparkles, ShieldCheck, HelpCircle, ShoppingBag, UtensilsCrossed, Star, Clock, User, Monitor, Bike } from 'lucide-react';
 import ChiliIcon from './components/ChiliIcon';
 import RestaurantCarousel from './components/RestaurantCarousel';
 
@@ -12,6 +12,8 @@ import FoodItemModal from './components/FoodItemModal';
 import CartDrawer from './components/CartDrawer';
 import OrderTracker from './components/OrderTracker';
 import RestaurantAdmin from './components/RestaurantAdmin';
+import DriverPortal from './components/DriverPortal';
+import UserProfileModal from './components/UserProfileModal';
 
 import './App.css';
 
@@ -20,6 +22,7 @@ function App() {
   const [activePage, setActivePage] = useState('dashboard'); // 'dashboard' or 'tracking'
   const [viewMode, setViewMode] = useState('customer'); // 'customer' or 'admin'
   const [selectedRestaurantId, setSelectedRestaurantId] = useState(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [restaurantTab, setRestaurantTab] = useState('menu'); // 'menu' or 'orders'
   
   // Browsing/Filters state
@@ -185,6 +188,28 @@ function App() {
     });
   };
 
+  const handleAssignDriverToOrder = (orderId, driverName) => {
+    setOrders(prev => prev.map(o => o.id === orderId ? { 
+      ...o, 
+      driverName: driverName,
+      driverVehicle: 'Motocicleta Honda (AJI-990)',
+      driverPhone: '+593 98 765 4321'
+    } : o));
+    
+    // Sincronizar el pedido que está actualmente bajo seguimiento de cliente
+    setCheckoutDetails(prev => {
+      if (prev && prev.id === orderId) {
+        return { 
+          ...prev, 
+          driverName: driverName,
+          driverVehicle: 'Motocicleta Honda (AJI-990)',
+          driverPhone: '+593 98 765 4321'
+        };
+      }
+      return prev;
+    });
+  };
+
   const handleBackToMenu = () => {
     setActivePage('dashboard');
     setCart([]); // Clear cart upon successful delivery
@@ -207,7 +232,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-dark flex flex-col font-sans select-none overflow-x-hidden">
+    <div className="min-h-screen bg-brand-dark flex flex-col font-sans select-none overflow-x-hidden pb-24 md:pb-0">
       
       {/* Navigation Header */}
       <Navbar 
@@ -220,7 +245,8 @@ function App() {
         currentAddress={currentAddress}
         onChangeAddress={setCurrentAddress}
         viewMode={viewMode}
-        onToggleViewMode={() => setViewMode(prev => prev === 'customer' ? 'admin' : 'customer')}
+        onToggleViewMode={(mode) => setViewMode(mode)}
+        onProfileClick={() => setIsProfileOpen(true)}
       />
 
       {/* Main Container */}
@@ -240,6 +266,22 @@ function App() {
                 onUpdateOrderStatus={handleUpdateOrderStatus} 
               />
             </motion.div>
+          ) : viewMode === 'driver' ? (
+            /* DRIVER PORTAL */
+            <motion.div
+              key="driver-portal"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+            >
+              <DriverPortal 
+                orders={orders} 
+                onUpdateOrderStatus={handleUpdateOrderStatus} 
+                onAssignDriver={handleAssignDriverToOrder}
+                user={user}
+              />
+            </motion.div>
           ) : activePage === 'dashboard' ? (
             /* CUSTOMER BROWSER BOARD OR DEDICATED RESTAURANT VIEW */
             <motion.div
@@ -254,16 +296,14 @@ function App() {
                 (() => {
                   const currentRest = MOCK_RESTAURANTS.find(r => r.id === selectedRestaurantId);
                   if (!currentRest) return null;
-                  const restOrders = orders.filter(o => o.restaurant === currentRest.name);
 
                   return (
-                    <div className="space-y-6 max-w-7xl mx-auto px-4 md:px-8 py-8">
+                    <div className="space-y-6 max-w-[95%] xl:max-w-[90%] 2xl:max-w-[1440px] mx-auto px-4 md:px-8 py-8">
                       {/* Breadcrumbs / Back Button */}
                       <div className="flex justify-between items-center mb-6">
                         <button 
                           onClick={() => {
                             setSelectedRestaurantId(null);
-                            setRestaurantTab('menu');
                           }}
                           className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-brand-border hover:border-brand-orange text-brand-text hover:text-brand-orange font-bold text-xs shadow-sm hover:shadow transition-all"
                         >
@@ -322,105 +362,15 @@ function App() {
                         </div>
                       </div>
 
-                      {/* Local Tabs Menu */}
-                      <div className="flex gap-4 border-b border-brand-border pb-3 text-left">
-                        <button
-                          onClick={() => setRestaurantTab('menu')}
-                          className={`flex items-center gap-2 pb-2 text-sm font-extrabold border-b-2 transition-all ${
-                            restaurantTab === 'menu' 
-                              ? 'border-brand-orange text-brand-orange' 
-                              : 'border-transparent text-brand-muted hover:text-brand-text'
-                          }`}
-                        >
-                          <UtensilsCrossed className="w-4 h-4" />
-                          Menú de Especialidades
-                        </button>
-                        <button
-                          onClick={() => setRestaurantTab('orders')}
-                          className={`flex items-center gap-2 pb-2 text-sm font-extrabold border-b-2 transition-all ${
-                            restaurantTab === 'orders' 
-                              ? 'border-brand-orange text-brand-orange' 
-                              : 'border-transparent text-brand-muted hover:text-brand-text'
-                          }`}
-                        >
-                          <ShoppingBag className="w-4 h-4" />
-                          Mis Pedidos aquí ({restOrders.length})
-                        </button>
-                      </div>
-
-                      {/* Local Tabs Content */}
-                      {restaurantTab === 'menu' ? (
+                      {/* Menu Grid directly (no tabs) */}
+                      <div className="pt-4 text-left">
                         <RestaurantGrid 
                           selectedCategory="all"
                           searchTerm={searchTerm}
                           onSelectItem={setSelectedItemForModal}
                           selectedRestaurantId={selectedRestaurantId}
                         />
-                      ) : (
-                        /* LOCAL ORDERS HISTORIAL */
-                        <div className="space-y-4 text-left">
-                          {restOrders.length === 0 ? (
-                            <div className="text-center py-16 bg-white rounded-3xl border border-brand-border flex flex-col items-center justify-center">
-                              <ShoppingBag className="w-10 h-10 text-brand-muted mb-3" />
-                              <h4 className="text-sm font-bold text-brand-text">Sin pedidos activos</h4>
-                              <p className="text-xs text-brand-muted max-w-xs mt-1">
-                                Aún no has realizado pedidos en {currentRest.name}.
-                              </p>
-                            </div>
-                          ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              {restOrders.map((order) => {
-                                const label = getStatusLabel(order.status);
-                                return (
-                                  <div key={order.id} className="bg-white border border-brand-border rounded-3xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-4">
-                                    <div className="flex justify-between items-start border-b border-brand-border/60 pb-3">
-                                      <div>
-                                        <div className="flex items-center gap-2">
-                                          <span className="text-sm font-black text-brand-text">{order.id}</span>
-                                          <span className={`text-[9px] font-extrabold px-2.5 py-0.5 rounded-full border ${label.color}`}>
-                                            {label.text}
-                                          </span>
-                                        </div>
-                                        <p className="text-[10px] text-brand-muted mt-1">Creado: {order.createdAt}</p>
-                                      </div>
-                                      <div className="text-right">
-                                        <span className="text-[9px] text-brand-muted block font-extrabold tracking-wider">TOTAL</span>
-                                        <span className="text-sm font-black text-brand-orange">S/ {order.total.toFixed(2)}</span>
-                                      </div>
-                                    </div>
-
-                                    <div className="space-y-1.5 text-xs">
-                                      {order.items.map((it, idx) => (
-                                        <div key={idx} className="flex justify-between text-brand-text">
-                                          <span className="truncate max-w-[200px]">
-                                            <span className="font-extrabold text-brand-orange mr-1">{it.quantity}x</span> {it.name}
-                                          </span>
-                                          <span className="text-brand-muted">S/ {(it.price * it.quantity).toFixed(2)}</span>
-                                        </div>
-                                      ))}
-                                    </div>
-
-                                    <div className="flex justify-between items-center pt-3 border-t border-brand-border/60 mt-2">
-                                      <span className="text-[10px] text-brand-muted font-semibold">
-                                        Tipo: {order.deliveryDetails?.method === 'delivery' ? 'Delivery a Aula' : 'Retiro en Local'}
-                                      </span>
-                                      <button 
-                                        onClick={() => {
-                                          setCheckoutDetails(order);
-                                          setActivePage('tracking');
-                                        }}
-                                        className="px-3.5 py-2 rounded-xl bg-brand-orange text-white text-[10px] font-extrabold tracking-wide uppercase hover:opacity-90 transition-opacity"
-                                      >
-                                        Seguimiento en Vivo
-                                      </button>
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </div>
-                      )}
+                      </div>
                     </div>
                   );
                 })()
@@ -430,7 +380,7 @@ function App() {
                   {/* Hero Banner Section */}
                   <div className="relative bg-gradient-to-b from-brand-card/90 to-brand-dark/40 py-16 px-4 md:px-8 border-b border-brand-border/30">
                     <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-brand-orange/5 blur-3xl pointer-events-none"></div>
-                    <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-left">
+                    <div className="max-w-[95%] xl:max-w-[90%] 2xl:max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-left">
                       
                       {/* Left Hero Details */}
                       <div className="space-y-4 max-w-2xl">
@@ -474,19 +424,6 @@ function App() {
 
                   {/* Dynamic Restaurant Carousel Slider */}
                   <RestaurantCarousel onSelectRestaurant={setSelectedRestaurantId} />
-
-                  {/* Food Category filter */}
-                  <Categories 
-                    selectedCategory={selectedCategory}
-                    onSelectCategory={setSelectedCategory}
-                  />
-
-                  {/* Products/Restaurants Grid */}
-                  <RestaurantGrid 
-                    selectedCategory={selectedCategory}
-                    searchTerm={searchTerm}
-                    onSelectItem={setSelectedItemForModal}
-                  />
                 </>
               )}
             </motion.div>
@@ -512,7 +449,7 @@ function App() {
 
       {/* Footer */}
       <footer className="bg-brand-card border-t border-brand-border py-8 px-4 md:px-8 mt-auto text-left">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-brand-muted">
+        <div className="max-w-[95%] xl:max-w-[90%] 2xl:max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-brand-muted">
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded bg-brand-red/15 text-brand-red">
               <ChiliIcon className="w-4 h-4" />
@@ -524,7 +461,7 @@ function App() {
           <div className="flex gap-6">
             <a href="#" onClick={(e) => { e.preventDefault(); alert('En desarrollo'); }} className="hover:text-brand-orange transition-colors">Ayuda & Soporte</a>
             <a href="#" onClick={(e) => { e.preventDefault(); alert('En desarrollo'); }} className="hover:text-brand-orange transition-colors">Términos Legales</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); alert('En desarrollo'); }} className="hover:text-brand-orange transition-colors">Portal UIDE</a>
+            <a href="https://www.uide.edu.ec/" target="_blank" rel="noopener noreferrer" className="hover:text-brand-orange transition-colors">Portal UIDE</a>
           </div>
         </div>
       </footer>
@@ -553,6 +490,84 @@ function App() {
           />
         )}
       </AnimatePresence>
+
+      {/* User Profile Modal */}
+      <AnimatePresence>
+        {isProfileOpen && (
+          <UserProfileModal 
+            isOpen={isProfileOpen}
+            onClose={() => setIsProfileOpen(false)}
+            user={user}
+            orders={orders}
+            currentAddress={currentAddress}
+            onViewOrderTracking={(order) => {
+              setCheckoutDetails(order);
+              setActivePage('tracking');
+              setIsProfileOpen(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Bottom Navigation Bar (app-like layout) */}
+      <div className="fixed bottom-4 left-4 right-4 z-40 bg-white/95 backdrop-blur-md border border-brand-border rounded-2xl shadow-xl flex justify-around items-center p-3 md:hidden">
+        <button 
+          onClick={() => {
+            setViewMode('customer');
+            setSelectedRestaurantId(null);
+            setActivePage('dashboard');
+          }}
+          className={`flex flex-col items-center gap-1 text-[10px] font-extrabold ${
+            viewMode === 'customer' && activePage === 'dashboard' && !selectedRestaurantId ? 'text-brand-orange animate-pulse' : 'text-brand-muted hover:text-brand-text'
+          }`}
+        >
+          <UtensilsCrossed className="w-5 h-5" />
+          <span>Campus</span>
+        </button>
+        
+        <button 
+          onClick={() => setIsCartOpen(true)}
+          className="flex flex-col items-center gap-1 text-[10px] font-extrabold text-brand-muted hover:text-brand-text relative"
+        >
+          <ShoppingBag className="w-5 h-5 text-brand-text" />
+          <span>Carrito</span>
+          {cart.reduce((sum, item) => sum + item.quantity, 0) > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 bg-gradient-to-r from-brand-red to-brand-orange text-white text-[8px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white">
+              {cart.reduce((sum, item) => sum + item.quantity, 0)}
+            </span>
+          )}
+        </button>
+
+        <button 
+          onClick={() => setIsProfileOpen(true)}
+          className={`flex flex-col items-center gap-1 text-[10px] font-extrabold ${
+            isProfileOpen ? 'text-brand-orange' : 'text-brand-muted hover:text-brand-text'
+          }`}
+        >
+          <User className="w-5 h-5 text-brand-text" />
+          <span>Mi Perfil</span>
+        </button>
+
+        <button 
+          onClick={() => setViewMode('admin')}
+          className={`flex flex-col items-center gap-1 text-[10px] font-extrabold ${
+            viewMode === 'admin' ? 'text-brand-orange' : 'text-brand-muted hover:text-brand-text'
+          }`}
+        >
+          <Monitor className="w-5 h-5 text-brand-text" />
+          <span>Socio</span>
+        </button>
+
+        <button 
+          onClick={() => setViewMode('driver')}
+          className={`flex flex-col items-center gap-1 text-[10px] font-extrabold ${
+            viewMode === 'driver' ? 'text-brand-orange animate-pulse' : 'text-brand-muted hover:text-brand-text'
+          }`}
+        >
+          <Bike className="w-5 h-5 text-brand-text" />
+          <span>Repartidor</span>
+        </button>
+      </div>
 
     </div>
   );
