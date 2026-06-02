@@ -1,0 +1,15 @@
+# ── Etapa 1: compilar con Maven ──────────────────────────────
+FROM maven:3.9-eclipse-temurin-21-alpine AS builder
+WORKDIR /app
+COPY pom.xml .
+# Descarga dependencias primero (cacheado si pom.xml no cambia)
+RUN mvn dependency:go-offline -q
+COPY src ./src
+RUN mvn package -DskipTests -q
+
+# ── Etapa 2: imagen de producción ────────────────────────────
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=builder /app/target/catalogo-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
