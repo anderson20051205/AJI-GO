@@ -5,15 +5,13 @@ import lombok.*;
 
 @Entity
 @Table(name = "categorias")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class Categoria {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long categoriaId;
 
     @Column(nullable = false)
-    private String nombreCategoria;
+    private String nombreCategoria;  // "Café", "Postre", "Bolón", "Bebida", etc.
 }
