@@ -7,11 +7,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "sucursales")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class Sucursal {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long sucursalId;
@@ -20,16 +18,13 @@ public class Sucursal {
     @JoinColumn(name = "restauranteId", nullable = false)
     private Restaurante restaurante;
 
-    private Long sectorId;
-    private Long usuarioId;
+    private Long sectorId;       // FK lógico → sectores
+    private Long usuarioId;      // Manager/Dueño en auth
+
     private String direccionDesc;
     private String mapaUrl;
     private String telefono;
-
-    @Column(nullable = false)
     private Boolean estaAbierto = true;
-
-    @Column(nullable = false)
     private Boolean activo = true;
 
     @Column(updatable = false)
