@@ -5,11 +5,9 @@ import lombok.*;
 
 @Entity
 @Table(name = "productos")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class Producto {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productoId;
@@ -23,17 +21,15 @@ public class Producto {
     private Categoria categoria;
 
     @Column(nullable = false)
-    private String nombreProducto;
+    private String nombreProducto;   // "Espresso Americano Orgánico"
 
     private String descripcion;
     private String imagenUrl;
-
-    @Column(nullable = false)
+    private String tag;              // "Café", "Postre", "Bolón" — para el frontend
+    private String badgeText;        // "PN", "EC", "CO", "UB"
     private Double precio;
-
-    @Column(nullable = false)
+    private Double rating;
     private Integer stock;
-
-    @Column(nullable = false)
+    private Integer spicyLevel = 0;  // 0 = sin picante
     private Boolean activo = true;
 }
