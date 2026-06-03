@@ -1,0 +1,7 @@
+fastapi[standard]
+sqlalchemy
+pyodbc
+python-jose[cryptography]
+python-dotenv
+alembic
+httpx
