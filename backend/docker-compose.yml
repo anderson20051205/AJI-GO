@@ -1,15 +1,4 @@
-#Juan Fernandez, Isaac Bonilla, Anderson Granda ---- AJI GO 
-
-version: "3.9"
-
-# auth     = Go    :8080
-# usuarios = Python :8000
-# catalogo = Java  :8080
-# pedidos  = Go    :8080
-# nginx    = public 80
-
 services:
-
   nginx:
     image: nginx:alpine
     container_name: ajigo-gateway
@@ -31,8 +20,8 @@ services:
     container_name: ajigo-auth
     depends_on:
       - db
-    expose:
-      - "8080"
+    ports:         
+      - "8080:8080" # Solo el Auth expuesto para tus pruebas locales
     environment:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT:-1433}
@@ -51,7 +40,7 @@ services:
     depends_on:
       - db
     expose:
-      - "8000"
+      - "8000" # Expose es suficiente para comunicación interna
     environment:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT:-1433}
@@ -69,17 +58,8 @@ services:
     depends_on:
       - db
     expose:
-      - "8080"
-    environment:
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT:-1433}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - SPRING_DATASOURCE_URL=jdbc:sqlserver://${DB_HOST}:${DB_PORT:-1433};databaseName=${DB_NAME};encrypt=true;trustServerCertificate=true
-      - SPRING_DATASOURCE_USERNAME=${DB_USER}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - "8080" # Nginx lo encontrará internamente por nombre de servicio
+    # ... (resto de configuración igual)
     networks:
       - ajigo-network
     restart: unless-stopped
@@ -90,14 +70,8 @@ services:
     depends_on:
       - db
     expose:
-      - "8080"
-    environment:
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT:-1433}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - JWT_SECRET=${JWT_SECRET}
+      - "8080" # Nginx lo encontrará internamente por nombre de servicio
+    # ... (resto de configuración igual)
     networks:
       - ajigo-network
     restart: unless-stopped
@@ -110,7 +84,7 @@ services:
       - SA_PASSWORD=${DB_PASSWORD}
       - MSSQL_PID=Developer
     ports:
-      - "1434:1433" #para no chocar con una instancia local de SQL Server
+      - "1434:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
     networks:

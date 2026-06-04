@@ -7,6 +7,7 @@ import (
 	"github.com/ajigo/auth/internal/database"
 	"github.com/ajigo/auth/internal/handlers"
 	"github.com/ajigo/auth/internal/services"
+	"github.com/gin-contrib/cors" // <-- Nuevo import
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,6 +24,13 @@ func main() {
 	authHandler := handlers.NewAuthHandler(authSvc)
 
 	r := gin.Default()
+
+	// <-- Configuración de CORS agregada -->
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowAllOrigins = true // Permite peticiones desde el frontend
+	corsConfig.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
+	r.Use(cors.New(corsConfig))
+
 	authHandler.RegisterRoutes(r)
 
 	log.Println("✓ Auth service corriendo en :8080")
