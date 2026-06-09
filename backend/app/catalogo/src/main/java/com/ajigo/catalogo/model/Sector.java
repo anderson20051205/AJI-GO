@@ -4,13 +4,15 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "sectores")
+@Table(name = "SECTORES")
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class Sector {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "SectorID")
     private Long sectorId;
 
-    @Column(nullable = false)
-    private String sectorSTR;  // Ej: "Facultad de Ciencias Técnicas"
+    @Column(name = "SectorSTR", nullable = false)
+    private String sectorSTR;
 }

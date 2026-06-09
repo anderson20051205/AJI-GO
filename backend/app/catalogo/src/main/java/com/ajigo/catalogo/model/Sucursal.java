@@ -6,28 +6,41 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "sucursales")
+@Table(name = "SUCURSALES")
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class Sucursal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "SucursalID")
     private Long sucursalId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restauranteId", nullable = false)
+    @JoinColumn(name = "RestauranteID", nullable = false)
     private Restaurante restaurante;
 
-    private Long sectorId;       // FK lógico → sectores
-    private Long usuarioId;      // Manager/Dueño en auth
+    @Column(name = "SectorID")
+    private Long sectorId;
 
+    @Column(name = "UsuarioID")
+    private Long usuarioId;
+
+    @Column(name = "DireccionDesc")
     private String direccionDesc;
+
+    @Column(name = "MapaURL")
     private String mapaUrl;
+
+    @Column(name = "Telefono")
     private String telefono;
+
+    @Column(name = "EstaAbierto")
     private Boolean estaAbierto = true;
+
+    @Column(name = "Activo")
     private Boolean activo = true;
 
-    @Column(updatable = false)
+    @Column(name = "FechaRegistro", updatable = false)
     private LocalDateTime fechaRegistro;
 
     @PrePersist

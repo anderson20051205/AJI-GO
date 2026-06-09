@@ -9,5 +9,4 @@ import java.util.Optional;
 @Repository
 public interface RestauranteRepository extends JpaRepository<Restaurante, Long> {
     List<Restaurante> findByActivoTrue();
-    Optional<Restaurante> findByBadgeText(String badgeText);
 }
