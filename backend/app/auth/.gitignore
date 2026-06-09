@@ -1,0 +1,11 @@
+# Binario compilado
+auth-service
+
+# Variables de entorno
+.env
+*.env
+
+# Go
+*.exe
+*.test
+/vendor/

@@ -1,11 +1,17 @@
 FROM golang:1.25-alpine AS builder
 WORKDIR /app
-COPY go.mod ./
+
+# ✅ FIX: Copiar go.sum junto con go.mod antes del download
+COPY go.mod go.sum ./
 RUN go mod download
+
 COPY . .
 RUN go mod tidy
+
+# ✅ FIX: Ruta correcta al main.go según la estructura del proyecto
 RUN go build -o auth-service ./cmd/main.go
 
+# --- imagen final mínima ---
 FROM alpine:3.19
 WORKDIR /app
 COPY --from=builder /app/auth-service .
