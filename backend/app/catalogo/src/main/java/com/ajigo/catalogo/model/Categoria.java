@@ -4,14 +4,15 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "categorias")
+@Table(name = "CATEGORIAS")
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class Categoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "CategoriaID")
     private Long categoriaId;
 
-    @Column(nullable = false)
-    private String nombreCategoria;  // "Café", "Postre", "Bolón", "Bebida", etc.
+    @Column(name = "NombreCategoria", nullable = false)
+    private String nombreCategoria;
 }

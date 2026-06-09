@@ -49,7 +49,7 @@ CREATE TABLE SUCURSALES (
     SucursalID    INT           IDENTITY(1,1) NOT NULL,  -- PK ✅
     RestauranteID INT           NOT NULL,                 -- FK ✅
     SectorID      INT           NOT NULL,                 -- FK ✅
-    UsuarioID     INT           NOT NULL,                 -- FK ✅
+    UsuarioID     INT           NULL,                 -- FK ✅
     DireccionDesc NVARCHAR(300) NOT NULL,
     MapaURL       NVARCHAR(500) NULL,
     Telefono      NVARCHAR(20)  NULL,

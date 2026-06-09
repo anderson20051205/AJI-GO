@@ -4,32 +4,38 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "productos")
+@Table(name = "PRODUCTOS")
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class Producto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ProductoID")
     private Long productoId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sucursalId", nullable = false)
+    @JoinColumn(name = "SucursalID", nullable = false)
     private Sucursal sucursal;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoriaId", nullable = false)
+    @JoinColumn(name = "CategoriaID", nullable = false)
     private Categoria categoria;
 
-    @Column(nullable = false)
-    private String nombreProducto;   // "Espresso Americano Orgánico"
+    @Column(name = "NombreProducto", nullable = false)
+    private String nombreProducto;
 
+    @Column(name = "Descripcion")
     private String descripcion;
+
+    @Column(name = "ImagenURL")
     private String imagenUrl;
-    private String tag;              // "Café", "Postre", "Bolón" — para el frontend
-    private String badgeText;        // "PN", "EC", "CO", "UB"
+
+    @Column(name = "Precio", nullable = false)
     private Double precio;
-    private Double rating;
+
+    @Column(name = "Stock", nullable = false)
     private Integer stock;
-    private Integer spicyLevel = 0;  // 0 = sin picante
+
+    @Column(name = "Activo", nullable = false)
     private Boolean activo = true;
 }
