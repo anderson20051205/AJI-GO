@@ -13,13 +13,13 @@
   --font-sans: 'Outfit', 'Inter', sans-serif;
 }
 
-/* Base resets and overrides */
 html {
-  font-size: 18.5px; /* Scales up layout & typography slightly for a fuller look */
+  font-size: 22px;
 }
 @media (max-width: 768px) {
+  /* AQUÍ DISMINUYO UN POCO EL TAMAÑO BASE PARA DISPOSITIVOS MÓVILES */
   html {
-    font-size: 16.5px; /* Adapts to mobile screens elegantly */
+    font-size: 19.5px;
   }
 }
 
@@ -33,7 +33,6 @@ html, body {
   font-family: 'Outfit', 'Inter', sans-serif;
 }
 
-/* Custom Scrollbar styled for light mode */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -52,7 +51,6 @@ html, body {
   background: #FF3838;
 }
 
-/* Glassmorphism utility for light mode */
 .glass-effect {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);
