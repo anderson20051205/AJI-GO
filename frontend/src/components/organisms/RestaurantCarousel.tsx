@@ -127,6 +127,51 @@ export default function RestaurantCarousel({
           logoBg: 'bg-amber-50 border-amber-100',
           badge: 'bg-amber-50 text-amber-600 border-amber-100'
         };
+      case 'el-cargo':
+        return {
+          accent: 'text-emerald-600',
+          borderHover: 'hover:border-emerald-300',
+          glow: 'hover:shadow-emerald-500/10',
+          btnBg: 'bg-emerald-600 hover:bg-emerald-700',
+          logoBg: 'bg-emerald-50 border-emerald-100',
+          badge: 'bg-emerald-50 text-emerald-600 border-emerald-100'
+        };
+      case 'toscana':
+        return {
+          accent: 'text-rose-600',
+          borderHover: 'hover:border-rose-300',
+          glow: 'hover:shadow-rose-500/10',
+          btnBg: 'bg-rose-600 hover:bg-rose-700',
+          logoBg: 'bg-rose-50 border-rose-100',
+          badge: 'bg-rose-50 text-rose-600 border-rose-100'
+        };
+      case 'happy-coffee':
+        return {
+          accent: 'text-yellow-600',
+          borderHover: 'hover:border-yellow-300',
+          glow: 'hover:shadow-yellow-500/10',
+          btnBg: 'bg-yellow-600 hover:bg-yellow-700',
+          logoBg: 'bg-yellow-50 border-yellow-100',
+          badge: 'bg-yellow-50 text-yellow-600 border-yellow-100'
+        };
+      case 'la-hueca':
+        return {
+          accent: 'text-orange-600',
+          borderHover: 'hover:border-orange-300',
+          glow: 'hover:shadow-orange-500/10',
+          btnBg: 'bg-orange-600 hover:bg-orange-700',
+          logoBg: 'bg-orange-50 border-orange-100',
+          badge: 'bg-orange-50 text-orange-600 border-orange-100'
+        };
+      case 'hanaska':
+        return {
+          accent: 'text-indigo-600',
+          borderHover: 'hover:border-indigo-300',
+          glow: 'hover:shadow-indigo-500/10',
+          btnBg: 'bg-indigo-600 hover:bg-indigo-700',
+          logoBg: 'bg-indigo-50 border-indigo-100',
+          badge: 'bg-indigo-50 text-indigo-600 border-indigo-100'
+        };
       default:
         return {
           accent: 'text-brand-orange',

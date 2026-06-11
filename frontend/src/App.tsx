@@ -253,6 +253,9 @@ export default function App() {
 
   //SEMANTICA PARA REDIRIGIR AL INICIO
   const handleLogoClick = () => {
+    if (currentUser?.role === 'admin') {
+      return;
+    }
     setViewMode('customer');
     setSelectedRestaurantId(null);
     setActivePage('dashboard');
@@ -301,6 +304,7 @@ export default function App() {
               <RestaurantAdmin
                 orders={orders}
                 onUpdateOrderStatus={handleUpdateOrderStatus}
+                user={currentUser}
               />
             </motion.div>
           ) : viewMode === 'driver' ? (
@@ -530,7 +534,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* BARRA DE BOTONES DE NAVEGACIÓN MÓVIL */}
-      {currentUser && (
+      {currentUser && currentUser.role !== 'admin' && (
         <div className="fixed bottom-4 left-4 right-4 z-40 bg-white/95 backdrop-blur-md border border-brand-border rounded-2xl shadow-xl flex justify-around items-center p-3.5 md:hidden select-none">
           {currentUser.role !== 'admin' && (
             <>

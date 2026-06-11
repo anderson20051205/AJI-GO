@@ -36,7 +36,7 @@ export default function DriverPortal({
   });
 
   // TIPO DE VEHÍCULO SELECCIONADO
-  const [vehicleType, setVehicleType] = useState<'foot' | 'bike' | 'moto'>('moto');
+  const [vehicleType, setVehicleType] = useState<'foot' | 'moto' | 'auto'>('moto');
 
   // ESTADOS DEL FLUJO DE ENTREGA ACTIVA
   const [deliveryStep, setDeliveryStep] = useState<'accepted' | 'picked_up'>('accepted');
@@ -46,8 +46,7 @@ export default function DriverPortal({
   // MODALES Y SIMULADOR DE ESCANEO
   const [showScanner, setShowScanner] = useState(false);
   const [scannerScanning, setScannerScanning] = useState(false);
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
-  const [withdrawAmount, setWithdrawAmount] = useState('');
+
 
   // MÉTRICAS DE GANANCIAS Y ENTREGAS COMPLETADAS
   useEffect(() => {
@@ -82,7 +81,7 @@ export default function DriverPortal({
   useEffect(() => {
     let interval: any;
     if (isSimulatingRoute && routeProgress < 100) {
-      const speed = vehicleType === 'moto' ? 8 : vehicleType === 'bike' ? 5 : 3;
+      const speed = vehicleType === 'moto' ? 8 : vehicleType === 'auto' ? 10 : 3;
       interval = setInterval(() => {
         setRouteProgress(prev => {
           if (prev + speed >= 100) {
@@ -168,23 +167,7 @@ export default function DriverPortal({
 
   // El pedido de prueba ha sido removido para evitar datos simulados locales.
 
-  const handleWithdraw = (e: React.FormEvent) => {
-    e.preventDefault();
-    const amount = parseFloat(withdrawAmount);
-    if (isNaN(amount) || amount <= 0) {
-      alert('Ingresa un monto válido.');
-      return;
-    }
-    if (amount > earnings) {
-      alert('Fondos insuficientes.');
-      return;
-    }
 
-    setEarnings(prev => prev - amount);
-    setWithdrawAmount('');
-    setShowWithdrawModal(false);
-    alert(`Transferencia exitosa: S/ ${amount.toFixed(2)} han sido enviados a tu cuenta bancaria registrada.`);
-  };
 
   // COORDENADAS DENTRO DEL MAPA
   const getMapCoordinates = () => {
@@ -594,20 +577,7 @@ export default function DriverPortal({
               </div>
             </div>
 
-            <button
-              onClick={() => {
-                if (earnings <= 0) {
-                  alert('No tienes saldo disponible para retirar.');
-                  return;
-                }
-                setWithdrawAmount(earnings.toString());
-                setShowWithdrawModal(true);
-              }}
-              className="w-full mt-4 bg-brand-text hover:bg-brand-text/95 text-white font-black text-xs py-3.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <TrendingUp className="w-4 h-4 text-brand-orange" />
-              Retirar a Banco
-            </button>
+
           </div>
 
           {/* CONFIGURACIÓN DE VEHÍCULO */}
@@ -620,8 +590,8 @@ export default function DriverPortal({
             <div className="flex gap-2.5 bg-brand-dark p-1 rounded-xl border border-brand-border/50 select-none">
               {[
                 { type: 'foot', label: 'Pie', speed: 'Lento' },
-                { type: 'bike', label: 'Bici', speed: 'Medio' },
-                { type: 'moto', label: 'Moto', speed: 'Rápido' }
+                { type: 'moto', label: 'Moto', speed: 'Rápido' },
+                { type: 'auto', label: 'Auto', speed: 'Rápido' }
               ].map((veh) => (
                 <button
                   key={veh.type}
@@ -749,67 +719,7 @@ export default function DriverPortal({
         )}
       </AnimatePresence>
 
-      {/* WITHDRAW MONEY MODAL */}
-      <AnimatePresence>
-        {showWithdrawModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowWithdrawModal(false)}
-              className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
-            />
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white border border-brand-border rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl z-10 text-brand-text p-6.5 relative text-left"
-            >
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-red via-brand-orange to-brand-yellow"></div>
-
-              <button
-                onClick={() => setShowWithdrawModal(false)}
-                className="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 rounded-full transition-all cursor-pointer"
-              >
-                <X className="w-4 h-4 text-brand-muted" />
-              </button>
-
-              <h3 className="text-base font-black mb-2 text-brand-text">Retirar Ganancias a Banco</h3>
-              <p className="text-xs text-brand-muted mb-4 font-semibold">Envía tu dinero de reparto de forma directa y segura a tu cuenta UIDE registrada.</p>
-
-              <form onSubmit={handleWithdraw} className="space-y-4.5 text-semibold">
-                <div className="space-y-2">
-                  <label className="text-[10px] text-brand-muted font-bold uppercase tracking-wider">Monto a Transferir (S/)</label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted font-bold text-xs">S/</span>
-                    <input
-                      type="number"
-                      step="0.01"
-                      max={earnings}
-                      min="1.00"
-                      value={withdrawAmount}
-                      onChange={(e) => setWithdrawAmount(e.target.value)}
-                      className="w-full bg-brand-dark border border-brand-border rounded-xl py-3.5 pl-8 pr-4 text-sm text-brand-text focus:outline-none font-bold"
-                      required
-                    />
-                  </div>
-                  <span className="text-[9px] text-brand-muted block font-semibold">Máximo disponible: S/ {earnings.toFixed(2)}</span>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-brand-red to-brand-orange text-white font-black text-xs py-3.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <TrendingUp className="w-4 h-4 text-white" />
-                  Confirmar Transferencia
-                </button>
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
     </div>
   );

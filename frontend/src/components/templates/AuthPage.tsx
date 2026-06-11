@@ -20,6 +20,7 @@ export default function AuthPage({ onLoginSuccess }: AuthPageProps) {
   const [successMsg, setSuccessMsg] = useState('');
   /* ESTADO DE ACEPTACION DE TERMINOS Y CONDICIONES */
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [selectedRestaurant, setSelectedRestaurant] = useState('Piedra Negra');
 
   const validateEmail = (val: string) => {
     return /\S+@\S+\.\S+/.test(val);
@@ -62,7 +63,8 @@ export default function AuthPage({ onLoginSuccess }: AuthPageProps) {
             name: email.split('@')[0],
             email,
             role: selectedRole,
-            driverStatus: selectedRole === 'driver' ? 'approved' : 'none'
+            driverStatus: selectedRole === 'driver' ? 'approved' : 'none',
+            restaurantAdminFor: selectedRole === 'admin' ? selectedRestaurant : undefined
           });
         }, 1200);
       } else {
@@ -72,7 +74,8 @@ export default function AuthPage({ onLoginSuccess }: AuthPageProps) {
             name,
             email,
             role: selectedRole,
-            driverStatus: selectedRole === 'driver' ? 'approved' : 'none'
+            driverStatus: selectedRole === 'driver' ? 'approved' : 'none',
+            restaurantAdminFor: selectedRole === 'admin' ? selectedRestaurant : undefined
           });
         }, 1500);
       }
@@ -172,8 +175,12 @@ export default function AuthPage({ onLoginSuccess }: AuthPageProps) {
                         key={r.id}
                         type="button"
                         onClick={() => {
-                          setSelectedRole(r.id as any);
+                          const newRole = r.id as 'customer' | 'admin' | 'driver';
+                          setSelectedRole(newRole);
                           setError('');
+                          if (newRole === 'admin' || newRole === 'driver') {
+                            setIsLogin(true);
+                          }
                         }}
                         className={`flex-1 py-3 px-1 rounded-xl font-black text-[10px] uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer ${
                           isSelected
@@ -207,6 +214,35 @@ export default function AuthPage({ onLoginSuccess }: AuthPageProps) {
 
                 {/* FORMULARIO DE ACCESO */}
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {selectedRole === 'admin' && (
+                    <div className="space-y-2 text-left">
+                      <label className="text-xs font-black text-brand-muted uppercase tracking-widest block">Restaurante / Sucursal</label>
+                      <div className="relative">
+                        <select
+                          value={selectedRestaurant}
+                          onChange={(e) => setSelectedRestaurant(e.target.value)}
+                          className="w-full bg-brand-dark border border-brand-border rounded-2xl py-4 px-5 text-sm text-brand-text placeholder-brand-muted/60 focus:outline-none focus:border-brand-orange appearance-none cursor-pointer"
+                          disabled={isLoading}
+                        >
+                          <option value="Piedra Negra">Piedra Negra</option>
+                          <option value="El Capi">El Capi</option>
+                          <option value="Collage">Collage</option>
+                          <option value="UIDE Bakery">UIDE Bakery</option>
+                          <option value="El Cargo">El Cargo</option>
+                          <option value="Toscana">Toscana</option>
+                          <option value="Happy Coffee">Happy Coffee</option>
+                          <option value="La Hueca">La Hueca</option>
+                          <option value="Hanaska">Hanaska</option>
+                        </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-brand-muted">
+                          <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {!isLogin && (
                     <div className="space-y-2 text-left">
                       <label className="text-xs font-black text-brand-muted uppercase tracking-widest block">Nombre Completo</label>
@@ -306,23 +342,25 @@ export default function AuthPage({ onLoginSuccess }: AuthPageProps) {
                 </form>
 
                 {/* BOTÓN PARA CAMBIAR ENTRE INICIO Y REGISTRO */}
-                <div className="mt-8 text-center text-sm font-semibold">
-                  <span className="text-brand-muted">
-                    {isLogin ? '¿No tienes cuenta?' : '¿Ya tienes una cuenta?'}
-                  </span>{' '}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsLogin(!isLogin);
-                      setError('');
-                      setAcceptTerms(false);
-                    }}
-                    className="text-brand-orange hover:text-brand-yellow font-black transition-colors focus:outline-none cursor-pointer"
-                    disabled={isLoading}
-                  >
-                    {isLogin ? 'Regístrate aquí' : 'Inicia sesión'}
-                  </button>
-                </div>
+                {selectedRole === 'customer' && (
+                  <div className="mt-8 text-center text-sm font-semibold">
+                    <span className="text-brand-muted">
+                      {isLogin ? '¿No tienes cuenta?' : '¿Ya tienes una cuenta?'}
+                    </span>{' '}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsLogin(!isLogin);
+                        setError('');
+                        setAcceptTerms(false);
+                      }}
+                      className="text-brand-orange hover:text-brand-yellow font-black transition-colors focus:outline-none cursor-pointer"
+                      disabled={isLoading}
+                    >
+                      {isLogin ? 'Regístrate aquí' : 'Inicia sesión'}
+                    </button>
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

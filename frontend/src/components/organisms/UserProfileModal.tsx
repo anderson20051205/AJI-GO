@@ -27,7 +27,8 @@ export default function UserProfileModal({
   const [isApplying, setIsApplying] = useState(false);
   const [phone, setPhone] = useState('');
   const [universityId, setUniversityId] = useState('');
-  const [vehicleType, setVehicleType] = useState('bike');
+  const [vehicleType, setVehicleType] = useState('foot');
+  const [licensePlate, setLicensePlate] = useState('');
 
   if (!isOpen) return null;
 
@@ -37,13 +38,19 @@ export default function UserProfileModal({
       alert('Por favor, completa todos los campos.');
       return;
     }
+    const isVehicleWithPlate = vehicleType === 'moto' || vehicleType === 'auto';
+    if (isVehicleWithPlate && !licensePlate.trim()) {
+      alert('Por favor, ingresa la matrícula del vehículo.');
+      return;
+    }
     if (onUpdateUser && user) {
       onUpdateUser({
         ...user,
         phone,
         universityId,
         driverStatus: 'pending',
-        vehicleType
+        vehicleType,
+        licensePlate: isVehicleWithPlate ? licensePlate : undefined
       });
       setIsApplying(false);
     }
@@ -158,7 +165,7 @@ export default function UserProfileModal({
             </div>
           </div>
 
-          /* DETALLES DE MEMBRESIA CON LECTURAS DINAMICAS */
+          {/* DETALLES DE MEMBRESIA CON LECTURAS DINAMICAS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div className="flex items-center gap-3 p-3.5 bg-slate-50 border border-brand-border/50 rounded-2xl text-xs font-semibold text-brand-muted">
               <Calendar className="w-4.5 h-4.5 text-brand-orange shrink-0" />
@@ -199,6 +206,8 @@ export default function UserProfileModal({
                 <button
                   onClick={() => {
                     setPhone(user.phone || '');
+                    setLicensePlate(user.licensePlate || '');
+                    setVehicleType(user.vehicleType || 'foot');
                     setIsApplying(true);
                   }}
                   className="w-full bg-brand-orange hover:bg-brand-orange/95 text-white font-black text-xs py-3 rounded-xl transition-all shadow-sm text-center cursor-pointer"
@@ -239,8 +248,8 @@ export default function UserProfileModal({
                     <div className="grid grid-cols-3 gap-2 select-none">
                       {[
                         { type: 'foot', label: 'A Pie' },
-                        { type: 'bike', label: 'Bicicleta' },
-                        { type: 'moto', label: 'Moto' }
+                        { type: 'moto', label: 'Moto' },
+                        { type: 'auto', label: 'Auto' }
                       ].map((v) => (
                         <button
                           key={v.type}
@@ -257,6 +266,20 @@ export default function UserProfileModal({
                       ))}
                     </div>
                   </div>
+
+                  {(vehicleType === 'moto' || vehicleType === 'auto') && (
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-brand-muted uppercase">Matrícula del Vehículo</label>
+                      <input
+                        type="text"
+                        placeholder="Ej: ABC-1234"
+                        value={licensePlate}
+                        onChange={(e) => setLicensePlate(e.target.value)}
+                        className="w-full bg-white border border-brand-border rounded-xl p-2.5 text-xs text-brand-text focus:outline-none focus:border-brand-orange"
+                        required
+                      />
+                    </div>
+                  )}
 
                   <div className="flex gap-2 pt-1.5">
                     <button

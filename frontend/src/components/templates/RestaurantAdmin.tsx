@@ -3,12 +3,13 @@ import {
   Store, TrendingUp, DollarSign, ShoppingBag, CheckCircle2,
   Clock, MapPin, QrCode, TrendingDown, Plus, BarChart3, AlertCircle
 } from 'lucide-react';
-import { Order } from '../../types';
+import { Order, User } from '../../types';
 
 // INTERFAZ PARA DEFINIR LAS PROPIEDADES DEL COMPONENTE DE ADMINISTRACIÓN DEL LOCAL
 interface RestaurantAdminProps {
   orders: Order[];
   onUpdateOrderStatus: (orderId: string, status: number) => void;
+  user: User | null;
 }
 
 interface Expense {
@@ -18,21 +19,144 @@ interface Expense {
   restaurant: string;
 }
 
+const getThemeClasses = (restaurant: string) => {
+  switch (restaurant) {
+    case 'Piedra Negra':
+      return {
+        bg: 'bg-pink-500',
+        text: 'text-pink-500',
+        border: 'border-pink-500',
+        hoverBg: 'hover:bg-pink-600',
+        borderB: 'border-b-pink-500',
+        fromTo: 'from-pink-700 to-pink-500',
+        groupHoverFromTo: 'group-hover:from-pink-600 group-hover:to-pink-400',
+        focusBorder: 'focus:border-pink-500',
+        bgHover: 'hover:border-pink-500/30'
+      };
+    case 'El Capi':
+      return {
+        bg: 'bg-cyan-500',
+        text: 'text-cyan-500',
+        border: 'border-cyan-500',
+        hoverBg: 'hover:bg-cyan-600',
+        borderB: 'border-b-cyan-500',
+        fromTo: 'from-cyan-700 to-cyan-500',
+        groupHoverFromTo: 'group-hover:from-cyan-600 group-hover:to-cyan-400',
+        focusBorder: 'focus:border-cyan-500',
+        bgHover: 'hover:border-cyan-500/30'
+      };
+    case 'Collage':
+      return {
+        bg: 'bg-purple-500',
+        text: 'text-purple-500',
+        border: 'border-purple-500',
+        hoverBg: 'hover:bg-purple-600',
+        borderB: 'border-b-purple-500',
+        fromTo: 'from-purple-700 to-purple-500',
+        groupHoverFromTo: 'group-hover:from-purple-600 group-hover:to-purple-400',
+        focusBorder: 'focus:border-purple-500',
+        bgHover: 'hover:border-purple-500/30'
+      };
+    case 'UIDE Bakery':
+      return {
+        bg: 'bg-amber-500',
+        text: 'text-amber-500',
+        border: 'border-amber-500',
+        hoverBg: 'hover:bg-amber-600',
+        borderB: 'border-b-amber-500',
+        fromTo: 'from-amber-700 to-amber-500',
+        groupHoverFromTo: 'group-hover:from-amber-600 group-hover:to-amber-400',
+        focusBorder: 'focus:border-amber-500',
+        bgHover: 'hover:border-amber-500/30'
+      };
+    case 'El Cargo':
+      return {
+        bg: 'bg-emerald-500',
+        text: 'text-emerald-500',
+        border: 'border-emerald-500',
+        hoverBg: 'hover:bg-emerald-600',
+        borderB: 'border-b-emerald-500',
+        fromTo: 'from-emerald-700 to-emerald-500',
+        groupHoverFromTo: 'group-hover:from-emerald-600 group-hover:to-emerald-400',
+        focusBorder: 'focus:border-emerald-500',
+        bgHover: 'hover:border-emerald-500/30'
+      };
+    case 'Toscana':
+      return {
+        bg: 'bg-rose-500',
+        text: 'text-rose-500',
+        border: 'border-rose-500',
+        hoverBg: 'hover:bg-rose-600',
+        borderB: 'border-b-rose-500',
+        fromTo: 'from-rose-700 to-rose-500',
+        groupHoverFromTo: 'group-hover:from-rose-600 group-hover:to-rose-400',
+        focusBorder: 'focus:border-rose-500',
+        bgHover: 'hover:border-rose-500/30'
+      };
+    case 'Happy Coffee':
+      return {
+        bg: 'bg-yellow-500',
+        text: 'text-yellow-500',
+        border: 'border-yellow-500',
+        hoverBg: 'hover:bg-yellow-600',
+        borderB: 'border-b-yellow-500',
+        fromTo: 'from-yellow-700 to-yellow-500',
+        groupHoverFromTo: 'group-hover:from-yellow-600 group-hover:to-yellow-400',
+        focusBorder: 'focus:border-yellow-500',
+        bgHover: 'hover:border-yellow-500/30'
+      };
+    case 'La Hueca':
+      return {
+        bg: 'bg-orange-500',
+        text: 'text-orange-500',
+        border: 'border-orange-500',
+        hoverBg: 'hover:bg-orange-600',
+        borderB: 'border-b-orange-500',
+        fromTo: 'from-orange-700 to-orange-500',
+        groupHoverFromTo: 'group-hover:from-orange-600 group-hover:to-orange-400',
+        focusBorder: 'focus:border-orange-500',
+        bgHover: 'hover:border-orange-500/30'
+      };
+    case 'Hanaska':
+      return {
+        bg: 'bg-indigo-500',
+        text: 'text-indigo-500',
+        border: 'border-indigo-500',
+        hoverBg: 'hover:bg-indigo-600',
+        borderB: 'border-b-indigo-500',
+        fromTo: 'from-indigo-700 to-indigo-500',
+        groupHoverFromTo: 'group-hover:from-indigo-600 group-hover:to-indigo-400',
+        focusBorder: 'focus:border-indigo-500',
+        bgHover: 'hover:border-indigo-500/30'
+      };
+    default:
+      return {
+        bg: 'bg-brand-orange',
+        text: 'text-brand-orange',
+        border: 'border-brand-orange',
+        hoverBg: 'hover:bg-brand-orange/95',
+        borderB: 'border-b-brand-orange',
+        fromTo: 'from-brand-red to-brand-orange',
+        groupHoverFromTo: 'group-hover:from-brand-orange group-hover:to-brand-yellow',
+        focusBorder: 'focus:border-brand-orange',
+        bgHover: 'hover:border-brand-orange/30'
+      };
+  }
+};
+
 export default function RestaurantAdmin({
   orders,
-  onUpdateOrderStatus
+  onUpdateOrderStatus,
+  user
 }: RestaurantAdminProps) {
-  const [selectedRestaurant, setSelectedRestaurant] = useState('Piedra Negra');
+  const selectedRestaurant = user?.restaurantAdminFor || 'Piedra Negra';
+  const theme = getThemeClasses(selectedRestaurant);
   const [activeTab, setActiveTab] = useState<'deliveries' | 'accounting'>('deliveries');
 
   // ESTADOS DEL REGISTRO DE GASTOS
   const [expenseName, setExpenseName] = useState('');
   const [expenseAmount, setExpenseAmount] = useState('');
-  const [expenses, setExpenses] = useState<Expense[]>([
-    { id: 1, name: 'Granos de café arábica (3kg)', amount: 45.00, restaurant: 'Piedra Negra' },
-    { id: 2, name: 'Cajas de empaque biodegradable', amount: 25.00, restaurant: 'Piedra Negra' },
-    { id: 3, name: 'Queso criollo de Manabí (5kg)', amount: 35.00, restaurant: 'El Capi' }
-  ]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
 
   const handleAddExpense = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,13 +186,49 @@ export default function RestaurantAdmin({
   const netEarnings = totalSales - totalExpenses;
   const averageTicket = activeOrders.length > 0 ? totalSales / activeOrders.length : 0;
 
-  // DATOS FICTICIOS DE BARRAS DE ESTADÍSTICAS POR HORARIOS DE CLASES
+  // Agrupar pedidos activos por horas
+  const hourlySales = {
+    '08:00': 0,
+    '10:00': 0,
+    '12:00': 0,
+    '14:00': 0,
+    '16:00': 0,
+  };
+
+  activeOrders.forEach(order => {
+    // Extraer hora del formato "HH:MM" o "HH:MM AM/PM"
+    const match = order.createdAt.match(/^(\d+):/);
+    if (match) {
+      let hourNum = parseInt(match[1], 10);
+      
+      // Manejar formato de 12 horas si el string contiene AM/PM
+      if (/pm/i.test(order.createdAt) && hourNum < 12) {
+        hourNum += 12;
+      } else if (/am/i.test(order.createdAt) && hourNum === 12) {
+        hourNum = 0;
+      }
+
+      // Asignar al rango correspondiente
+      if (hourNum < 9) {
+        hourlySales['08:00']++;
+      } else if (hourNum < 11) {
+        hourlySales['10:00']++;
+      } else if (hourNum < 13) {
+        hourlySales['12:00']++;
+      } else if (hourNum < 15) {
+        hourlySales['14:00']++;
+      } else {
+        hourlySales['16:00']++;
+      }
+    }
+  });
+
   const chartData = [
-    { hour: '08:00', sales: 12 },
-    { hour: '10:00', sales: 25 },
-    { hour: '12:00', sales: 48 }, // HORA PICO EN EL CAMPUS UIDE.....esto solo de prueba 
-    { hour: '14:00', sales: 30 },
-    { hour: '16:00', sales: 15 }
+    { hour: '08:00', sales: hourlySales['08:00'] },
+    { hour: '10:00', sales: hourlySales['10:00'] },
+    { hour: '12:00', sales: hourlySales['12:00'] },
+    { hour: '14:00', sales: hourlySales['14:00'] },
+    { hour: '16:00', sales: hourlySales['16:00'] }
   ];
 
   const getStatusLabel = (status: number) => {
@@ -84,31 +244,14 @@ export default function RestaurantAdmin({
   return (
     <div className="max-w-[95%] xl:max-w-[90%] 2xl:max-w-[1440px] mx-auto px-4 md:px-8 py-10 text-brand-text">
 
-      {/* SECCIÓN DEL SELECTOR DEL RESTAURANTE SOCIO */}
+      {/* SECCIÓN DE CABECERA DE ADMINISTRACIÓN */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-brand-border/40 pb-6 mb-8 text-left">
         <div>
           <span className="text-xs bg-brand-orange/15 text-brand-orange px-4 py-1.5 rounded-full font-black uppercase tracking-widest border border-brand-orange/10">
-            PORTAL DE SOCIOS UIDE
+            PORTAL DE SOCIOS UIDE - {selectedRestaurant.toUpperCase()}
           </span>
           <h2 className="text-3xl font-black text-brand-text mt-4">Gestión de Restaurante</h2>
-          <p className="text-xs text-brand-muted mt-1.5 font-medium">Lleva el control de pedidos, despachos de delivery y finanzas del local.</p>
-        </div>
-
-        <div className="flex flex-wrap gap-2.5">
-          {['Piedra Negra', 'El Capi', 'Collage', 'UIDE Bakery'].map((r) => (
-            <button
-              key={r}
-              onClick={() => setSelectedRestaurant(r)}
-              className={`px-4.5 py-3 rounded-xl border text-xs font-black transition-all duration-300 cursor-pointer ${selectedRestaurant === r
-                  ? r === 'Piedra Negra'
-                    ? 'bg-pink-500 border-transparent text-white shadow-lg shadow-pink-500/10'
-                    : 'bg-brand-orange border-transparent text-white shadow-lg shadow-brand-orange/10'
-                  : 'bg-brand-card hover:bg-brand-card/85 border-brand-border text-brand-muted hover:text-brand-orange'
-                }`}
-            >
-              {r}
-            </button>
-          ))}
+          <p className="text-xs text-brand-muted mt-1.5 font-medium">Lleva el control de pedidos, despachos de delivery y finanzas de tu local.</p>
         </div>
       </div>
 
@@ -117,7 +260,7 @@ export default function RestaurantAdmin({
         <button
           onClick={() => setActiveTab('deliveries')}
           className={`flex items-center gap-2 pb-2 text-sm font-black border-b-2 transition-all cursor-pointer ${activeTab === 'deliveries'
-              ? selectedRestaurant === 'Piedra Negra' ? 'border-pink-500 text-pink-500' : 'border-brand-orange text-brand-orange'
+              ? `${theme.border} ${theme.text}`
               : 'border-transparent text-brand-muted hover:text-brand-orange'
             }`}
         >
@@ -127,7 +270,7 @@ export default function RestaurantAdmin({
         <button
           onClick={() => setActiveTab('accounting')}
           className={`flex items-center gap-2 pb-2 text-sm font-black border-b-2 transition-all cursor-pointer ${activeTab === 'accounting'
-              ? selectedRestaurant === 'Piedra Negra' ? 'border-pink-500 text-pink-500' : 'border-brand-orange text-brand-orange'
+              ? `${theme.border} ${theme.text}`
               : 'border-transparent text-brand-muted hover:text-brand-orange'
             }`}
         >
@@ -157,8 +300,7 @@ export default function RestaurantAdmin({
                 return (
                   <div
                     key={order.id}
-                    className={`glass-effect rounded-3xl border p-6.5 flex flex-col justify-between gap-6 transition-all duration-300 bg-white shadow-sm border-brand-border/60 ${selectedRestaurant === 'Piedra Negra' ? 'hover:border-pink-500/30' : 'hover:border-brand-orange/30'
-                      }`}
+                    className={`glass-effect rounded-3xl border p-6.5 flex flex-col justify-between gap-6 transition-all duration-300 bg-white shadow-sm border-brand-border/60 ${theme.bgHover}`}
                   >
                     {/* CABECERA INDIVIDUAL DEL PEDIDO */}
                     <div className="flex justify-between items-start border-b border-brand-border/40 pb-4.5 text-left">
@@ -263,10 +405,7 @@ export default function RestaurantAdmin({
                               onUpdateOrderStatus(order.id, 3);
                             }
                           }}
-                          className={`flex items-center gap-1.5 py-2.5 px-4 rounded-xl text-[10px] font-black transition-all text-white cursor-pointer ${selectedRestaurant === 'Piedra Negra'
-                              ? 'bg-pink-600 hover:bg-pink-500'
-                              : 'bg-brand-orange hover:bg-brand-orange/90 shadow-md shadow-brand-orange/15'
-                            }`}
+                          className={`flex items-center gap-1.5 py-2.5 px-4 rounded-xl text-[10px] font-black transition-all text-white cursor-pointer ${theme.bg} hover:opacity-90 shadow-md`}
                         >
                           <QrCode className="w-4 h-4" />
                           Escanear QR
@@ -337,17 +476,15 @@ export default function RestaurantAdmin({
 
                 <div className="h-44 flex items-end justify-between gap-3.5 border-b border-brand-border/30 pb-2 relative select-none">
                   {chartData.map((data, index) => {
-                    const barHeightPercent = (data.sales / 50) * 100;
+                    const maxSales = Math.max(...chartData.map(d => d.sales), 10);
+                    const barHeightPercent = (data.sales / maxSales) * 100;
                     return (
                       <div key={index} className="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-                        <span className="text-[10px] font-black text-brand-orange opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <span className={`text-[10px] font-black ${theme.text} opacity-0 group-hover:opacity-100 transition-opacity duration-200`}>
                           {data.sales} ped
                         </span>
                         <div
-                          className={`w-full rounded-t-lg transition-all duration-1000 ${selectedRestaurant === 'Piedra Negra'
-                              ? 'bg-gradient-to-t from-pink-700 to-pink-500 group-hover:from-pink-600 group-hover:to-pink-400'
-                              : 'bg-gradient-to-t from-brand-red to-brand-orange group-hover:from-brand-orange group-hover:to-brand-yellow'
-                            }`}
+                          className={`w-full rounded-t-lg transition-all duration-1000 bg-gradient-to-t ${theme.fromTo} ${theme.groupHoverFromTo}`}
                           style={{ height: `${barHeightPercent}%` }}
                         ></div>
                         <span className="text-[10px] text-brand-muted font-black">{data.hour}</span>
@@ -356,7 +493,7 @@ export default function RestaurantAdmin({
                   })}
                 </div>
                 <div className="flex gap-4 text-[10px] text-brand-muted mt-4 font-bold">
-                  <span className="flex items-center gap-1.5"><AlertCircle className="w-4 h-4 text-brand-orange" /> Mayor volumen registrado a la hora del almuerzo universitario.</span>
+                  <span className="flex items-center gap-1.5"><AlertCircle className={`w-4 h-4 ${theme.text}`} /> Mayor volumen registrado a la hora del almuerzo universitario.</span>
                 </div>
               </div>
 
@@ -427,10 +564,7 @@ export default function RestaurantAdmin({
 
                   <button
                     type="submit"
-                    className={`w-full font-black text-xs py-3.5 px-4.5 rounded-xl flex items-center justify-center gap-1.5 text-white transition duration-300 cursor-pointer ${selectedRestaurant === 'Piedra Negra'
-                        ? 'bg-pink-600 hover:bg-pink-500'
-                        : 'bg-gradient-to-r from-brand-red to-brand-orange hover:opacity-95'
-                      }`}
+                    className={`w-full font-black text-xs py-3.5 px-4.5 rounded-xl flex items-center justify-center gap-1.5 text-white transition duration-300 cursor-pointer ${theme.bg} hover:opacity-95`}
                   >
                     <Plus className="w-4 h-4" />
                     Añadir Gasto

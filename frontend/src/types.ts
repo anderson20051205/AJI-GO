@@ -13,6 +13,8 @@ export interface User {
   driverStatus?: 'none' | 'pending' | 'approved';
   vehicleType?: string;
   universityId?: string;
+  licensePlate?: string;
+  restaurantAdminFor?: string;
 }
 
 export interface Dish {

@@ -61,10 +61,12 @@ export default function Navbar({
           </div>
 
           {/* SELECCIONADOR DE DIRECCIONES UNIVERSITARIAS*/}
-          <AddressPicker
-            currentAddress={currentAddress}
-            onChangeAddress={onChangeAddress}
-          />
+          {viewMode !== 'admin' && user?.role !== 'admin' && (
+            <AddressPicker
+              currentAddress={currentAddress}
+              onChangeAddress={onChangeAddress}
+            />
+          )}
         </div>
 
         {/* BARRA DE BÚSQUEDA FILTRADORA */}
@@ -201,16 +203,18 @@ export default function Navbar({
                       <p className="text-sm font-black text-brand-text truncate">{user.name}</p>
                     </div>
 
-                    <button
-                      onClick={() => {
-                        onProfileClick();
-                        setShowUserMenu(false);
-                      }}
-                      className="w-full text-left px-3.5 py-2.5 text-xs text-brand-text rounded-xl hover:bg-brand-dark transition-colors flex items-center gap-2 cursor-pointer"
-                    >
-                      <User className="w-4 h-4 text-brand-muted" />
-                      Mi Perfil
-                    </button>
+                    {viewMode !== 'admin' && user?.role !== 'admin' && (
+                      <button
+                        onClick={() => {
+                          onProfileClick();
+                          setShowUserMenu(false);
+                        }}
+                        className="w-full text-left px-3.5 py-2.5 text-xs text-brand-text rounded-xl hover:bg-brand-dark transition-colors flex items-center gap-2 cursor-pointer"
+                      >
+                        <User className="w-4 h-4 text-brand-muted" />
+                        Mi Perfil
+                      </button>
+                    )}
 
                     <button
                       onClick={() => {
