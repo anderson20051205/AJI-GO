@@ -35,6 +35,7 @@ export default function CartDrawer({
   const [floorLevel, setFloorLevel] = useState('');
   const [classroomOffice, setClassroomOffice] = useState('');
   const [deliveryNotes, setDeliveryNotes] = useState('');
+  const [transferReceipt, setTransferReceipt] = useState<string | null>(null);
 
   // ESTADOS DEL CUPÓN DE DESCUENTO
   const [couponCode, setCouponCode] = useState('');
@@ -79,6 +80,10 @@ export default function CartDrawer({
         alert('Por favor indica el número de aula u oficina.');
         return;
       }
+      if (!transferReceipt) {
+        alert('Por favor sube el comprobante de transferencia bancaria para continuar con el delivery.');
+        return;
+      }
     }
 
     onCheckout({
@@ -89,6 +94,7 @@ export default function CartDrawer({
       tax,
       total,
       coupon: discountPercent > 0 ? 'AJIGO20' : null,
+      transferReceipt: deliveryMethod === 'delivery' ? (transferReceipt || undefined) : undefined,
       deliveryDetails: {
         method: deliveryMethod,
         faculty: selectedFaculty,
@@ -293,6 +299,51 @@ export default function CartDrawer({
                           rows={2}
                           className="w-full bg-brand-dark/50 border border-brand-border rounded-xl p-3.5 text-xs text-brand-text placeholder-brand-muted/40 focus:outline-none focus:border-brand-orange"
                         ></textarea>
+                      </div>
+
+                      {/* COMPROBANTE DE TRANSFERENCIA (SOLO PARA DELIVERY) */}
+                      <div className="space-y-2">
+                        <label className="text-xs font-black text-brand-text uppercase tracking-wider block">
+                          Comprobante de Transferencia (Obligatorio)
+                        </label>
+                        <div className="border-2 border-dashed border-brand-border rounded-2xl p-4 bg-brand-dark/30 hover:bg-brand-dark/50 transition-colors flex flex-col items-center justify-center cursor-pointer relative min-h-[100px]">
+                          {transferReceipt ? (
+                            <div className="relative w-full flex flex-col items-center gap-2">
+                              <img src={transferReceipt} alt="Comprobante de Pago" className="max-h-32 rounded-lg object-contain border border-brand-border" />
+                              <button
+                                type="button"
+                                onClick={() => setTransferReceipt(null)}
+                                className="absolute -top-2 -right-2 bg-brand-red text-white p-1 rounded-full hover:bg-brand-red/90 flex items-center justify-center cursor-pointer"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                              <span className="text-[10px] text-brand-muted truncate max-w-full">Comprobante cargado correctamente</span>
+                            </div>
+                          ) : (
+                            <label className="w-full flex flex-col items-center justify-center gap-2 py-2 cursor-pointer">
+                              <svg className="w-8 h-8 text-brand-orange animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                              </svg>
+                              <span className="text-xs font-bold text-brand-muted hover:text-brand-orange transition-colors">Subir Comprobante</span>
+                              <span className="text-[9px] text-brand-muted/70">Formatos: PNG, JPG, JPEG</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const reader = new FileReader();
+                                    reader.onloadend = () => {
+                                      setTransferReceipt(reader.result as string);
+                                    };
+                                    reader.readAsDataURL(file);
+                                  }
+                                }}
+                                className="hidden"
+                              />
+                            </label>
+                          )}
+                        </div>
                       </div>
 
                     </div>

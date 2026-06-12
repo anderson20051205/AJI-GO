@@ -23,7 +23,7 @@ export default function AuthPage({ onLoginSuccess }: AuthPageProps) {
   const [selectedRestaurant, setSelectedRestaurant] = useState('Piedra Negra');
 
   const validateEmail = (val: string) => {
-    return /\S+@\S+\.\S+/.test(val);
+    return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(val);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -39,6 +39,7 @@ export default function AuthPage({ onLoginSuccess }: AuthPageProps) {
       setError('Por favor, ingresa un correo electrónico válido.');
       return;
     }
+
 
     if (password.length < 6) {
       setError('La contraseña debe tener al menos 6 caracteres.');

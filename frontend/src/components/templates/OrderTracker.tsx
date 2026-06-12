@@ -312,6 +312,15 @@ export default function OrderTracker({
                 <span>Total pagado</span>
                 <span className="text-brand-orange">S/ {orderDetails?.total?.toFixed(2) || '0.00'}</span>
               </div>
+
+              {orderDetails?.transferReceipt && (
+                <div className="border-t border-brand-border/40 mt-4.5 pt-4 space-y-2 text-left">
+                  <span className="text-[9px] text-brand-muted block uppercase font-bold tracking-wider">Comprobante de Pago (Transferencia)</span>
+                  <div className="rounded-xl overflow-hidden border border-brand-border/40 bg-brand-dark/25 p-2 flex justify-center">
+                    <img src={orderDetails.transferReceipt} alt="Comprobante" className="max-h-48 object-contain rounded-lg shadow-sm" />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

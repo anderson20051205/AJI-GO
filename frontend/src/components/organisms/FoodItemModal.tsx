@@ -104,7 +104,7 @@ export default function FoodItemModal({
         className="w-full max-w-xl bg-brand-card border border-brand-border rounded-3xl overflow-hidden shadow-2xl relative z-10 max-h-[90vh] flex flex-col"
       >
         {/* ENCABEZADO Y AVATAR DE SIGLAS DEL LOCAL */}
-        <div className="relative h-48 bg-gradient-to-tr from-brand-card via-brand-dark to-brand-border flex items-center justify-center border-b border-brand-border/60">
+        <div className="relative h-48 bg-gradient-to-tr from-brand-card via-brand-dark to-brand-border flex items-center justify-center border-b border-brand-border/60 overflow-hidden">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2.5 rounded-full bg-brand-dark/60 hover:bg-brand-dark text-brand-muted hover:text-brand-orange border border-brand-border/40 transition-colors z-20 cursor-pointer"
@@ -112,9 +112,17 @@ export default function FoodItemModal({
             <X className="w-5 h-5" />
           </button>
 
-          <div className="w-22 h-22 rounded-3xl bg-brand-dark border border-brand-border flex items-center justify-center font-black text-brand-orange text-3xl tracking-widest shadow-2xl select-none">
-            {item.badgeText}
-          </div>
+          {item.imageSrc ? (
+            <img
+              src={item.imageSrc}
+              alt={item.name}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-22 h-22 rounded-3xl bg-brand-dark border border-brand-border flex items-center justify-center font-black text-brand-orange text-3xl tracking-widest shadow-2xl select-none">
+              {item.badgeText}
+            </div>
+          )}
         </div>
 
         {/* CONTENIDO DE PERSONALIZACIÓN */}

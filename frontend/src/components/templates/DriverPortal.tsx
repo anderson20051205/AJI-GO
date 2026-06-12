@@ -34,6 +34,10 @@ export default function DriverPortal({
     const saved = localStorage.getItem('aji_go_driver_completed');
     return saved ? parseInt(saved, 10) : 0;
   });
+  const [earningsByRestaurant, setEarningsByRestaurant] = useState<Record<string, number>>(() => {
+    const saved = localStorage.getItem('aji_go_driver_earnings_by_restaurant');
+    return saved ? JSON.parse(saved) : {};
+  });
 
   // TIPO DE VEHÍCULO SELECCIONADO
   const [vehicleType, setVehicleType] = useState<'foot' | 'moto' | 'auto'>('moto');
@@ -52,7 +56,8 @@ export default function DriverPortal({
   useEffect(() => {
     localStorage.setItem('aji_go_driver_earnings', earnings.toFixed(2));
     localStorage.setItem('aji_go_driver_completed', completedDeliveries.toString());
-  }, [earnings, completedDeliveries]);
+    localStorage.setItem('aji_go_driver_earnings_by_restaurant', JSON.stringify(earningsByRestaurant));
+  }, [earnings, completedDeliveries, earningsByRestaurant]);
 
   // COORDENADAS GEOGRÁFICAS EN EL MAPA SVG DEL CAMPUS UIDE
   const locations: Record<string, { x: number; y: number; label: string }> = {
@@ -155,8 +160,18 @@ export default function DriverPortal({
     const randomTip = Math.random() > 0.5 ? parseFloat((Math.random() * 2 + 1).toFixed(2)) : 0;
     const totalEarned = fee + randomTip;
 
+    const restaurantName = activeDelivery.restaurant || 'Desconocido';
+
     setEarnings(prev => prev + totalEarned);
     setCompletedDeliveries(prev => prev + 1);
+    setEarningsByRestaurant(prev => {
+      const updated = {
+        ...prev,
+        [restaurantName]: (prev[restaurantName] || 0) + totalEarned
+      };
+      localStorage.setItem('aji_go_driver_earnings_by_restaurant', JSON.stringify(updated));
+      return updated;
+    });
 
     setActiveDelivery(null);
     setRouteProgress(0);
@@ -420,6 +435,40 @@ export default function DriverPortal({
                       </p>
                     )}
                   </div>
+
+                  {activeDelivery.transferReceipt && (
+                    <div className="p-4 bg-slate-50 border border-brand-border/40 rounded-2xl col-span-1 md:col-span-2">
+                      <span className="text-[9px] text-brand-muted block uppercase font-bold tracking-wider mb-2">Comprobante de Transferencia</span>
+                      <div className="flex items-center gap-4 text-left font-semibold">
+                        <img 
+                          src={activeDelivery.transferReceipt} 
+                          alt="Comprobante" 
+                          className="w-14 h-14 rounded-lg object-cover cursor-pointer border border-brand-border hover:opacity-85"
+                          onClick={() => {
+                            const newTab = window.open();
+                            if (newTab) {
+                              newTab.document.write(`<img src="${activeDelivery.transferReceipt}" style="max-width:100%; max-height:100vh; display:block; margin:auto;" />`);
+                            }
+                          }}
+                        />
+                        <div>
+                          <p className="text-xs font-bold text-brand-text">Pago registrado por transferencia</p>
+                          <button 
+                            type="button"
+                            className="text-[10px] text-brand-orange hover:text-brand-yellow font-black underline cursor-pointer"
+                            onClick={() => {
+                              const newTab = window.open();
+                              if (newTab) {
+                                newTab.document.write(`<img src="${activeDelivery.transferReceipt}" style="max-width:100%; max-height:100vh; display:block; margin:auto;" />`);
+                              }
+                            }}
+                          >
+                            Ver comprobante
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* BOTÓN CONTROLADOR DEL FLUJO DEL GPS */}
@@ -577,6 +626,22 @@ export default function DriverPortal({
               </div>
             </div>
 
+            {/* Desglose por restaurante */}
+            <div className="border-t border-brand-border/40 mt-4 pt-4 text-xs font-semibold">
+              <span className="text-[10px] text-brand-muted block uppercase font-bold tracking-wider mb-2">Ganancia por Restaurante</span>
+              {Object.keys(earningsByRestaurant).length === 0 ? (
+                <p className="text-[11px] text-brand-muted italic mt-1 font-medium">Sin ganancias registradas por local.</p>
+              ) : (
+                <div className="space-y-2 max-h-32 overflow-y-auto mt-2 pr-1">
+                  {Object.entries(earningsByRestaurant).map(([restName, amount]) => (
+                    <div key={restName} className="flex justify-between items-center py-1.5 px-2.5 bg-slate-50 border border-brand-border/40 rounded-xl">
+                      <span className="text-brand-text truncate font-bold">{restName}</span>
+                      <span className="text-brand-orange font-black">S/ {amount.toFixed(2)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
           </div>
 

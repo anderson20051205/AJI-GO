@@ -6,7 +6,7 @@ import RestaurantCarousel from './components/organisms/RestaurantCarousel';
 
 import AuthPage from './components/templates/AuthPage';
 import Navbar from './components/organisms/Navbar';
-import RestaurantGrid, { MOCK_RESTAURANTS } from './components/organisms/RestaurantGrid';
+import RestaurantGrid, { MOCK_RESTAURANTS, MOCK_DISHES } from './components/organisms/RestaurantGrid';
 import FoodItemModal from './components/organisms/FoodItemModal';
 import CartDrawer from './components/organisms/CartDrawer';
 import OrderTracker from './components/templates/OrderTracker';
@@ -27,6 +27,22 @@ export default function App() {
   const [viewMode, setViewMode] = useState<'customer' | 'admin' | 'driver'>('customer');
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  // ESTADO CONFIGURABLE DE PLATOS DE COMIDA POR LOCAL
+  const [dishes, setDishes] = useState<Dish[]>(() => {
+    const saved = localStorage.getItem('aji_go_dishes');
+    return saved ? JSON.parse(saved) : MOCK_DISHES;
+  });
+
+  // Guardar platos en localStorage
+  useEffect(() => {
+    localStorage.setItem('aji_go_dishes', JSON.stringify(dishes));
+  }, [dishes]);
+
+  // Scroll hacia arriba automático al cambiar de restaurante
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [selectedRestaurantId]);
 
   // ESTADOS DE FILTRO Y BÚSQUEDA
   const [searchTerm, setSearchTerm] = useState('');
@@ -305,6 +321,9 @@ export default function App() {
                 orders={orders}
                 onUpdateOrderStatus={handleUpdateOrderStatus}
                 user={currentUser}
+                dishes={dishes}
+                onAddDish={(newDish: Dish) => setDishes(prev => [newDish, ...prev])}
+                onDeleteDish={(dishId: string) => setDishes(prev => prev.filter(d => d.id !== dishId))}
               />
             </motion.div>
           ) : viewMode === 'driver' ? (
@@ -376,10 +395,6 @@ export default function App() {
                               <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">
                                 {currentRest.name}
                               </h2>
-                              <span className="flex items-center gap-1 bg-white/20 text-white font-bold text-xs px-2.5 py-1 rounded-lg border border-white/10 shrink-0">
-                                <Star className="w-3.5 h-3.5 fill-current text-brand-yellow" />
-                                {currentRest.rating}
-                              </span>
                             </div>
                             <p className="text-xs font-black text-white/95 mt-1">
                               {currentRest.tagline}
@@ -406,6 +421,7 @@ export default function App() {
                           searchTerm={searchTerm}
                           onSelectItem={setSelectedItemForModal}
                           selectedRestaurantId={selectedRestaurantId}
+                          dishes={dishes}
                         />
                       </div>
                     </div>

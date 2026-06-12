@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Mail, MapPin, Award, Calendar, BadgeCheck, Sparkles, ShoppingBag, ArrowRight, Bike } from 'lucide-react';
 import ChiliIcon from '../atoms/ChiliIcon';
 import { User, Order } from '../../types';
+import { MOCK_RESTAURANTS } from './RestaurantGrid';
 
 // INTERFAZ PARA CONTROLAR LAS PROPIEDADES DEL MODAL DE PERFIL DE USUARIO
 interface UserProfileModalProps {
@@ -26,15 +27,21 @@ export default function UserProfileModal({
 }: UserProfileModalProps) {
   const [isApplying, setIsApplying] = useState(false);
   const [phone, setPhone] = useState('');
-  const [universityId, setUniversityId] = useState('');
   const [vehicleType, setVehicleType] = useState('foot');
   const [licensePlate, setLicensePlate] = useState('');
+
+  // ESTADOS PARA EL CANJE DE PUNTOS
+  const [isRedeeming, setIsRedeeming] = useState(false);
+  const [selectedRedeemRestaurant, setSelectedRedeemRestaurant] = useState(MOCK_RESTAURANTS[0]?.name || 'Piedra Negra');
+  const [selectedPackage, setSelectedPackage] = useState(50);
+  const [redeemSuccessMsg, setRedeemSuccessMsg] = useState('');
+  const [redeemErrorMsg, setRedeemErrorMsg] = useState('');
 
   if (!isOpen) return null;
 
   const handleApplySubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phone.trim() || !universityId.trim()) {
+    if (!phone.trim()) {
       alert('Por favor, completa todos los campos.');
       return;
     }
@@ -47,7 +54,6 @@ export default function UserProfileModal({
       onUpdateUser({
         ...user,
         phone,
-        universityId,
         driverStatus: 'pending',
         vehicleType,
         licensePlate: isVehicleWithPlate ? licensePlate : undefined
@@ -59,6 +65,34 @@ export default function UserProfileModal({
   /* CALCULO DE ESTADISTICAS Y OBTENCION DE PUNTOS DINAMICOS */
   const totalOrders = orders ? orders.length : 0;
   const ajiGoPoints = user?.points !== undefined ? user.points : totalOrders * 15;
+
+  const handleRedeemPoints = (e: React.FormEvent) => {
+    e.preventDefault();
+    setRedeemErrorMsg('');
+    setRedeemSuccessMsg('');
+
+    if (ajiGoPoints < selectedPackage) {
+      setRedeemErrorMsg('No tienes suficientes puntos para realizar este canje.');
+      return;
+    }
+
+    if (onUpdateUser && user) {
+      const remainingPoints = ajiGoPoints - selectedPackage;
+      onUpdateUser({
+        ...user,
+        points: remainingPoints
+      });
+
+      const couponCode = `AJIGO-CANJE-${Math.floor(1000 + Math.random() * 9000)}`;
+      setRedeemSuccessMsg(`¡Canje exitoso! Usa el código ${couponCode} en ${selectedRedeemRestaurant}. Se han descontado ${selectedPackage} puntos.`);
+      
+      // Auto-ocultar el mensaje después de unos segundos
+      setTimeout(() => {
+        setRedeemSuccessMsg('');
+        setIsRedeeming(false);
+      }, 8000);
+    }
+  };
 
   const getStatusLabel = (status: number) => {
     switch (status) {
@@ -189,6 +223,91 @@ export default function UserProfileModal({
             </div>
           </div>
 
+          {/* SECCIÓN DE CANJE DE PUNTOS */}
+          <div className="p-5 rounded-2xl bg-brand-yellow/5 border border-brand-yellow/20 text-left space-y-4">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-brand-yellow/10 text-brand-orange flex items-center justify-center">
+                <Award className="w-5 h-5 text-brand-orange" />
+              </div>
+              <div>
+                <h4 className="text-sm font-black text-brand-text font-sans">Canjear Puntos AJI GO</h4>
+                <p className="text-[10px] text-brand-muted font-semibold">Usa tus puntos acumulados para obtener productos de cortesía</p>
+              </div>
+            </div>
+
+            {!isRedeeming ? (
+              <button
+                onClick={() => {
+                  setRedeemSuccessMsg('');
+                  setRedeemErrorMsg('');
+                  setIsRedeeming(true);
+                }}
+                className="w-full bg-brand-orange hover:bg-brand-orange/95 text-white font-black text-xs py-3 rounded-xl transition-all shadow-sm text-center cursor-pointer"
+              >
+                Canjear mis puntos ahora
+              </button>
+            ) : (
+              <form onSubmit={handleRedeemPoints} className="space-y-3.5 pt-1.5">
+                {redeemErrorMsg && (
+                  <div className="p-3 bg-brand-red/10 border border-brand-red/20 text-brand-red text-[11px] rounded-xl font-bold">
+                    {redeemErrorMsg}
+                  </div>
+                )}
+                {redeemSuccessMsg && (
+                  <div className="p-3 bg-green-500/10 border border-green-500/20 text-green-600 text-[11px] rounded-xl font-bold">
+                    {redeemSuccessMsg}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-brand-muted uppercase block">1. Selecciona Local</label>
+                    <select
+                      value={selectedRedeemRestaurant}
+                      onChange={(e) => setSelectedRedeemRestaurant(e.target.value)}
+                      className="w-full bg-white border border-brand-border rounded-xl p-2.5 text-xs text-brand-text focus:outline-none focus:border-brand-orange cursor-pointer"
+                    >
+                      {MOCK_RESTAURANTS.map((rest) => (
+                        <option key={rest.id} value={rest.name}>
+                          {rest.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-brand-muted uppercase block">2. Selecciona Recompensa</label>
+                    <select
+                      value={selectedPackage}
+                      onChange={(e) => setSelectedPackage(Number(e.target.value))}
+                      className="w-full bg-white border border-brand-border rounded-xl p-2.5 text-xs text-brand-text focus:outline-none focus:border-brand-orange cursor-pointer"
+                    >
+                      <option value={50}>50 puntos = Bebida gratis</option>
+                      <option value={100}>100 puntos = Entrada gratis</option>
+                      <option value={150}>150 puntos = Almuerzo gratis</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-1.5">
+                  <button
+                    type="submit"
+                    className="flex-1 bg-brand-orange hover:bg-brand-orange/95 text-white font-black text-xs py-2.5 rounded-xl transition-all shadow-sm cursor-pointer"
+                  >
+                    Confirmar Canje
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsRedeeming(false)}
+                    className="bg-slate-200 hover:bg-slate-300 text-brand-muted font-bold text-xs py-2.5 px-4 rounded-xl transition-all cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+
           {/* SECCIÓN TRABAJAR COMO REPARTIDOR (PARA CLIENTES NATURALES) */}
           {user?.role === 'customer' && (
             <div className="p-5 rounded-2xl bg-brand-orange/5 border border-brand-orange/20 text-left space-y-4">
@@ -218,29 +337,16 @@ export default function UserProfileModal({
 
               {isApplying && (
                 <form onSubmit={handleApplySubmit} className="space-y-3 pt-2">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-brand-muted uppercase">Teléfono Móvil</label>
-                      <input
-                        type="tel"
-                        placeholder="Ej: +593987654321"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="w-full bg-white border border-brand-border rounded-xl p-2.5 text-xs text-brand-text focus:outline-none focus:border-brand-orange"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-brand-muted uppercase">Matrícula UIDE / ID</label>
-                      <input
-                        type="text"
-                        placeholder="Ej: 2023100234"
-                        value={universityId}
-                        onChange={(e) => setUniversityId(e.target.value)}
-                        className="w-full bg-white border border-brand-border rounded-xl p-2.5 text-xs text-brand-text focus:outline-none focus:border-brand-orange"
-                        required
-                      />
-                    </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-brand-muted uppercase">Teléfono Móvil</label>
+                    <input
+                      type="tel"
+                      placeholder="Ej: +593987654321"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="w-full bg-white border border-brand-border rounded-xl p-2.5 text-xs text-brand-text focus:outline-none focus:border-brand-orange"
+                      required
+                    />
                   </div>
 
                   <div className="space-y-1">

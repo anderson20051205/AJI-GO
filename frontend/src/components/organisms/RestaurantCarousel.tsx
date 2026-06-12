@@ -252,10 +252,6 @@ export default function RestaurantCarousel({
                     <span className={`text-[11px] font-black px-3 py-1.5 rounded-lg border uppercase tracking-wider ${theme.badge}`}>
                       {restaurant.badgeText}
                     </span>
-                    <span className="flex items-center gap-1.5 bg-brand-yellow/10 text-brand-yellow font-black text-xs px-2.5 py-1 rounded-lg border border-brand-yellow/15 shrink-0">
-                      <Star className="w-4 h-4 fill-current" />
-                      {restaurant.rating}
-                    </span>
                   </div>
 
                   {/* IDENTIFICACIÓN E IMAGEN DEL LOGOTIPO */}

@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import {
   Store, TrendingUp, DollarSign, ShoppingBag, CheckCircle2,
-  Clock, MapPin, QrCode, TrendingDown, Plus, BarChart3, AlertCircle
+  Clock, MapPin, QrCode, TrendingDown, Plus, BarChart3, AlertCircle, Trash2, X
 } from 'lucide-react';
-import { Order, User } from '../../types';
+import { Order, User, Dish } from '../../types';
+import { MOCK_RESTAURANTS } from '../organisms/RestaurantGrid';
 
 // INTERFAZ PARA DEFINIR LAS PROPIEDADES DEL COMPONENTE DE ADMINISTRACIÓN DEL LOCAL
 interface RestaurantAdminProps {
   orders: Order[];
   onUpdateOrderStatus: (orderId: string, status: number) => void;
   user: User | null;
+  dishes: Dish[];
+  onAddDish: (newDish: Dish) => void;
+  onDeleteDish?: (dishId: string) => void;
 }
 
 interface Expense {
@@ -147,11 +151,70 @@ const getThemeClasses = (restaurant: string) => {
 export default function RestaurantAdmin({
   orders,
   onUpdateOrderStatus,
-  user
+  user,
+  dishes,
+  onAddDish,
+  onDeleteDish
 }: RestaurantAdminProps) {
   const selectedRestaurant = user?.restaurantAdminFor || 'Piedra Negra';
   const theme = getThemeClasses(selectedRestaurant);
-  const [activeTab, setActiveTab] = useState<'deliveries' | 'accounting'>('deliveries');
+  const [activeTab, setActiveTab] = useState<'deliveries' | 'accounting' | 'products'>('deliveries');
+
+  // OBTENER IDENTIFICADOR Y DETALLES DEL LOCAL ACTIVO
+  const activeRestaurantObj = MOCK_RESTAURANTS.find(r => r.name === selectedRestaurant) || MOCK_RESTAURANTS[0];
+  const restaurantId = activeRestaurantObj?.id || 'piedra-negra';
+  const badgeText = activeRestaurantObj?.badgeText || 'AJI';
+
+  // ESTADOS DEL REGISTRO DE PRODUCTOS
+  const [newProductName, setNewProductName] = useState('');
+  const [newProductDesc, setNewProductDesc] = useState('');
+  const [newProductPrice, setNewProductPrice] = useState('');
+  const [newProductTag, setNewProductTag] = useState('Plato Fuerte');
+  const [newProductSpicy, setNewProductSpicy] = useState(0);
+  const [newProductImage, setNewProductImage] = useState<string | null>(null);
+
+  // FILTRAR PLATOS DE ESTE LOCAL
+  const restaurantDishes = dishes.filter(d => d.category === restaurantId);
+
+  const handleAddProduct = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newProductName.trim() || !newProductPrice) {
+      alert('Por favor, completa los campos requeridos.');
+      return;
+    }
+
+    const price = parseFloat(newProductPrice);
+    if (isNaN(price) || price <= 0) {
+      alert('Por favor, ingresa un precio válido.');
+      return;
+    }
+
+    const newDish: Dish = {
+      id: `dish-${Date.now()}`,
+      name: newProductName.trim(),
+      description: newProductDesc.trim() || 'Sin descripción.',
+      price,
+      category: restaurantId,
+      restaurant: selectedRestaurant,
+      rating: 4.8,
+      badgeText,
+      tag: newProductTag,
+      spicyLevel: newProductSpicy,
+      imageSrc: newProductImage || undefined
+    };
+
+    onAddDish(newDish);
+
+    // RESETEAR CAMPOS del formulario
+    setNewProductName('');
+    setNewProductDesc('');
+    setNewProductPrice('');
+    setNewProductTag('Plato Fuerte');
+    setNewProductSpicy(0);
+    setNewProductImage(null);
+
+    alert('¡Producto agregado con éxito!');
+  };
 
   // ESTADOS DEL REGISTRO DE GASTOS
   const [expenseName, setExpenseName] = useState('');
@@ -277,6 +340,16 @@ export default function RestaurantAdmin({
           <TrendingUp className="w-4.5 h-4.5" />
           Contabilidad & Finanzas
         </button>
+        <button
+          onClick={() => setActiveTab('products')}
+          className={`flex items-center gap-2 pb-2 text-sm font-black border-b-2 transition-all cursor-pointer ${activeTab === 'products'
+              ? `${theme.border} ${theme.text}`
+              : 'border-transparent text-brand-muted hover:text-brand-orange'
+            }`}
+        >
+          <Store className="w-4.5 h-4.5" />
+          Gestionar Productos
+        </button>
       </div>
 
       {/* CONTENIDO PRINCIPAL SEGÚN PESTAÑA */}
@@ -364,6 +437,40 @@ export default function RestaurantAdmin({
                       </div>
                     </div>
 
+                    {order.transferReceipt && (
+                      <div className="border-t border-brand-border/30 pt-3.5 space-y-2 text-left font-semibold text-xs">
+                        <span className="text-[10px] text-brand-muted block uppercase font-bold tracking-wider">Comprobante de Pago</span>
+                        <div className="flex items-center gap-4 bg-brand-dark/20 p-2.5 rounded-2xl border border-brand-border/40">
+                          <img 
+                            src={order.transferReceipt} 
+                            alt="Comprobante" 
+                            className="w-12 h-12 rounded-lg object-cover cursor-pointer hover:opacity-80 border border-brand-border" 
+                            onClick={() => {
+                              const newTab = window.open();
+                              if (newTab) {
+                                newTab.document.write(`<img src="${order.transferReceipt}" style="max-width:100%; max-height:100vh; display:block; margin:auto;" />`);
+                              }
+                            }}
+                          />
+                          <div>
+                            <p className="text-brand-text font-bold text-[11px]">Transferencia Bancaria</p>
+                            <button 
+                              type="button"
+                              className="text-[10px] text-brand-orange hover:text-brand-yellow font-black underline cursor-pointer" 
+                              onClick={() => {
+                                const newTab = window.open();
+                                if (newTab) {
+                                  newTab.document.write(`<img src="${order.transferReceipt}" style="max-width:100%; max-height:100vh; display:block; margin:auto;" />`);
+                                }
+                              }}
+                            >
+                              Ver a tamaño completo
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* CONTROLADORES DE CAMBIO DE ESTADO Y QR */}
                     <div className="bg-brand-dark/40 border border-brand-border/40 p-4.5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
                       <div className="flex gap-2">
@@ -420,7 +527,7 @@ export default function RestaurantAdmin({
             </div>
           )}
         </div>
-      ) : (
+      ) : activeTab === 'accounting' ? (
         /* PESTAÑA FINANCIERA */
         <div className="space-y-8 text-left">
 
@@ -593,6 +700,191 @@ export default function RestaurantAdmin({
             </div>
           </div>
 
+        </div>
+      ) : (
+        /* PESTAÑA DE GESTIÓN DE PRODUCTOS */
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-left font-sans">
+          {/* FORMULARIO DE AGREGAR PRODUCTO */}
+          <div className="glass-effect rounded-3xl p-7 bg-white border border-brand-border/60 shadow-sm space-y-6">
+            <h3 className="text-sm font-black text-brand-text uppercase tracking-wider">Añadir Nuevo Producto</h3>
+
+            <form onSubmit={handleAddProduct} className="space-y-4.5 font-semibold text-xs text-brand-text">
+              <div className="space-y-1 text-left">
+                <label className="text-[10px] text-brand-muted font-bold uppercase tracking-wider block">Nombre del Producto *</label>
+                <input
+                  type="text"
+                  placeholder="Ej. Tacos al Pastor, Jugo de Mango"
+                  value={newProductName}
+                  onChange={(e) => setNewProductName(e.target.value)}
+                  className="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-brand-text focus:outline-none focus:border-brand-orange"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1 text-left">
+                <label className="text-[10px] text-brand-muted font-bold uppercase tracking-wider block">Descripción</label>
+                <textarea
+                  placeholder="Describe los ingredientes, tamaño u otros detalles..."
+                  value={newProductDesc}
+                  onChange={(e) => setNewProductDesc(e.target.value)}
+                  rows={3}
+                  className="w-full bg-brand-dark/50 border border-brand-border rounded-xl p-3 text-xs text-brand-text placeholder-brand-muted/40 focus:outline-none focus:border-brand-orange"
+                ></textarea>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3.5">
+                <div className="space-y-1 text-left">
+                  <label className="text-[10px] text-brand-muted font-bold uppercase tracking-wider block">Precio (S/) *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={newProductPrice}
+                    onChange={(e) => setNewProductPrice(e.target.value)}
+                    className="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-brand-text focus:outline-none focus:border-brand-orange font-bold"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1 text-left">
+                  <label className="text-[10px] text-brand-muted font-bold uppercase tracking-wider block">Categoría / Etiqueta</label>
+                  <select
+                    value={newProductTag}
+                    onChange={(e) => setNewProductTag(e.target.value)}
+                    className="w-full bg-brand-dark border border-brand-border rounded-xl p-3 text-xs text-brand-text focus:outline-none focus:border-brand-orange cursor-pointer"
+                  >
+                    <option value="Bebida">Bebida</option>
+                    <option value="Postre">Postre</option>
+                    <option value="Entrada">Entrada</option>
+                    <option value="Plato Fuerte">Plato Fuerte</option>
+                    <option value="Sándwich">Sándwich</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1 text-left">
+                <label className="text-[10px] text-brand-muted font-bold uppercase tracking-wider block">Nivel de Picante (0-3)</label>
+                <div className="flex justify-between select-none">
+                  {[0, 1, 2, 3].map((level) => (
+                    <button
+                      key={level}
+                      type="button"
+                      onClick={() => setNewProductSpicy(level)}
+                      className={`w-10 h-10 rounded-xl border font-black flex items-center justify-center transition-all cursor-pointer ${
+                        newProductSpicy === level
+                          ? 'bg-brand-orange text-white border-transparent shadow-sm'
+                          : 'bg-brand-dark/50 border-brand-border text-brand-muted hover:text-brand-text'
+                      }`}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* CARGA DE IMAGEN DEL PRODUCTO */}
+              <div className="space-y-2 text-left">
+                <label className="text-[10px] text-brand-muted font-bold uppercase tracking-wider block">Imagen del Producto</label>
+                <div className="border-2 border-dashed border-brand-border rounded-2xl p-4 bg-brand-dark/30 hover:bg-brand-dark/50 transition-colors flex flex-col items-center justify-center cursor-pointer relative min-h-[90px]">
+                  {newProductImage ? (
+                    <div className="relative w-full flex flex-col items-center gap-1.5">
+                      <img src={newProductImage} alt="Producto" className="max-h-20 rounded-lg object-contain border border-brand-border" />
+                      <button
+                        type="button"
+                        onClick={() => setNewProductImage(null)}
+                        className="absolute -top-2 -right-2 bg-brand-red text-white p-1 rounded-full hover:bg-brand-red/90 flex items-center justify-center cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="w-full flex flex-col items-center justify-center gap-1.5 cursor-pointer">
+                      <svg className="w-6.5 h-6.5 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                      <span className="text-[11px] font-bold text-brand-muted">Cargar Foto de Producto</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setNewProductImage(reader.result as string);
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className={`w-full font-black text-xs py-3.5 px-4.5 rounded-xl flex items-center justify-center gap-1.5 text-white transition duration-300 cursor-pointer ${theme.bg} hover:opacity-95`}
+              >
+                <Plus className="w-4 h-4" />
+                Registrar Producto
+              </button>
+            </form>
+          </div>
+
+          {/* LISTADO DE PRODUCTOS EXISTENTES */}
+          <div className="lg:col-span-2 glass-effect rounded-3xl p-7 bg-white border border-brand-border/60 shadow-sm space-y-6">
+            <h3 className="text-sm font-black text-brand-text uppercase tracking-wider">Productos en Menú ({restaurantDishes.length})</h3>
+
+            <div className="space-y-4 max-h-[550px] overflow-y-auto pr-1">
+              {restaurantDishes.length === 0 ? (
+                <p className="text-xs text-brand-muted py-12 text-center font-semibold">No has registrado ningún producto todavía.</p>
+              ) : (
+                restaurantDishes.map((dish) => (
+                  <div key={dish.id} className="flex flex-col sm:flex-row items-center sm:items-stretch justify-between p-4 bg-brand-dark/30 border border-brand-border/40 rounded-2xl gap-4 text-xs font-semibold">
+                    <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left flex-1 min-w-0">
+                      <div className="w-16 h-16 rounded-xl bg-brand-dark border border-brand-border flex items-center justify-center text-brand-orange font-black text-xs overflow-hidden shrink-0">
+                        {dish.imageSrc ? (
+                          <img src={dish.imageSrc} alt={dish.name} className="w-full h-full object-cover" />
+                        ) : (
+                          dish.badgeText
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1 text-left">
+                        <div className="flex items-center gap-2 justify-center sm:justify-start">
+                          <h4 className="text-sm font-black text-brand-text truncate">{dish.name}</h4>
+                          <span className="text-[9px] uppercase font-black text-brand-orange bg-brand-orange/10 px-2 py-0.5 rounded border border-brand-orange/15">{dish.tag}</span>
+                        </div>
+                        <p className="text-[11px] text-brand-muted line-clamp-2 mt-1 leading-relaxed">{dish.description}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex sm:flex-col items-center justify-between sm:justify-center border-t sm:border-t-0 border-brand-border/30 pt-2.5 sm:pt-0 shrink-0 gap-3.5">
+                      <div className="text-left sm:text-right font-black">
+                        <span className="text-[9px] text-brand-muted block font-bold">PRECIO</span>
+                        <span className="text-sm text-brand-text font-black">S/ {dish.price.toFixed(2)}</span>
+                      </div>
+                      {onDeleteDish && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm(`¿Seguro que deseas eliminar "${dish.name}" de tu menú?`)) {
+                              onDeleteDish(dish.id);
+                            }
+                          }}
+                          className="p-2 rounded-xl bg-brand-red/10 hover:bg-brand-red/25 text-brand-red border border-brand-red/10 hover:border-brand-red/20 transition-all cursor-pointer"
+                          title="Eliminar producto"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
         </div>
       )}
 

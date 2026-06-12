@@ -28,6 +28,7 @@ export interface Dish {
   badgeText: string;
   tag: string;
   spicyLevel: number;
+  imageSrc?: string;
 }
 
 export interface Restaurant {
@@ -79,4 +80,5 @@ export interface Order {
   driverName?: string;
   driverVehicle?: string;
   driverPhone?: string;
+  transferReceipt?: string;
 }

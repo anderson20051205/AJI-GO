@@ -205,7 +205,7 @@ export const MOCK_DISHES: Dish[] = [
     spicyLevel: 0
   },
 
-  // El Cargo (Hamburguesas & Costillas)
+  // El Cargo (Hamburguesas y Papas fritas)
   {
     id: 'cg1',
     name: 'Hamburguesa La Cargo Especial',
@@ -441,11 +441,11 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
   { 
     id: 'el-cargo', 
     name: 'El Cargo', 
-    tagline: 'Hamburguesas & Costillas Premium', 
+    tagline: 'Hamburguesas & Papas Fritas', 
     rating: 4.8, 
     badgeText: 'ECG', 
     bannerColor: 'from-emerald-950 to-emerald-900',
-    description: 'Hamburguesas artesanales a la parrilla y costillas bañadas en salsa BBQ secreta para saciar tu gran apetito.'
+    description: 'Hamburguesas artesanales a la parrilla y papas rústicas recién hechas. Sabor y calidad premium en cualquier momento del dia en la UIDE.'
   },
   { 
     id: 'toscana', 
@@ -468,11 +468,11 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
   { 
     id: 'la-hueca', 
     name: 'La Hueca', 
-    tagline: 'Almuerzos Caseros & Tradición Ecuatoriana', 
+    tagline: 'Tradición Ecuatoriana', 
     rating: 4.8, 
     badgeText: 'LH', 
     bannerColor: 'from-orange-950 to-orange-900',
-    description: 'El auténtico sabor de la comida casera ecuatoriana. Almuerzos diarios balanceados y platos típicos con sabor de hogar.'
+    description: 'El auténtico sabor de la comida casera ecuatoriana, ceviches frescos y platos tradicionales para disfrutar en la UIDE.'
   },
   { 
     id: 'hanaska', 
@@ -587,13 +587,15 @@ interface RestaurantGridProps {
   searchTerm: string;
   onSelectItem: (item: Dish) => void;
   selectedRestaurantId: string | null;
+  dishes: Dish[];
 }
 
 export default function RestaurantGrid({
   selectedCategory,
   searchTerm,
   onSelectItem,
-  selectedRestaurantId
+  selectedRestaurantId,
+  dishes
 }: RestaurantGridProps) {
 
   // FILTRO RESTAURANTES SEGUN LA SELECCION DEL USUARIO
@@ -609,7 +611,7 @@ export default function RestaurantGrid({
         const theme = getThemeColors(restaurant.id);
 
         // FILTRO PLATOS
-        const restaurantDishes = MOCK_DISHES.filter(dish =>
+        const restaurantDishes = dishes.filter(dish =>
           dish.category === restaurant.id &&
           (dish.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             dish.description.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -624,52 +626,50 @@ export default function RestaurantGrid({
               }`}
           >
             {/* ENCABEZADO DE CADA RESTAURANTE */}
-            <div className={`p-7 md:p-9 bg-gradient-to-r ${restaurant.bannerColor} relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-brand-border/50`}>
-              <div className="absolute inset-0 bg-black/10 pointer-events-none"></div>
+            {!selectedRestaurantId && (
+              <div className={`p-7 md:p-9 bg-gradient-to-r ${restaurant.bannerColor} relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-brand-border/50`}>
+                <div className="absolute inset-0 bg-black/10 pointer-events-none"></div>
 
-              <div className="flex items-center gap-4.5 relative z-10 text-left">
-                <div className={`relative w-16 h-16 rounded-2xl bg-brand-dark/95 border ${isPinkTheme ? 'border-pink-500/20' : 'border-brand-border'} flex items-center justify-center font-black shadow-lg shrink-0 overflow-hidden`}>
-                  {restaurant.useImage && restaurant.imageSrc ? (
-                    <img
-                      src={restaurant.imageSrc}
-                      alt={restaurant.name}
-                      className="w-full h-full object-cover relative z-10"
-                      onError={(e: any) => { e.target.style.display = 'none'; }}
-                    />
-                  ) : null}
-                  <span className={`absolute text-sm tracking-wider ${theme.badgeText}`}>
-                    {restaurant.badgeText}
-                  </span>
-                </div>
-
-                <div className="min-w-0">
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-xl md:text-2xl font-black text-white tracking-tight">
-                      {restaurant.name}
-                    </h2>
-                    <span className="flex items-center gap-1.5 bg-brand-yellow/15 text-brand-yellow font-black text-xs px-2.5 py-1 rounded-lg border border-brand-yellow/15 shrink-0">
-                      <Star className="w-4 h-4 fill-current" />
-                      {restaurant.rating}
+                <div className="flex items-center gap-4.5 relative z-10 text-left">
+                  <div className={`relative w-16 h-16 rounded-2xl bg-brand-dark/95 border ${isPinkTheme ? 'border-pink-500/20' : 'border-brand-border'} flex items-center justify-center font-black shadow-lg shrink-0 overflow-hidden`}>
+                    {restaurant.useImage && restaurant.imageSrc ? (
+                      <img
+                        src={restaurant.imageSrc}
+                        alt={restaurant.name}
+                        className="w-full h-full object-cover relative z-10"
+                        onError={(e: any) => { e.target.style.display = 'none'; }}
+                      />
+                    ) : null}
+                    <span className={`absolute text-sm tracking-wider ${theme.badgeText}`}>
+                      {restaurant.badgeText}
                     </span>
                   </div>
-                  <p className={`text-xs font-black mt-1 ${isPinkTheme ? 'text-pink-400' : 'text-brand-orange'}`}>
-                    {restaurant.tagline}
-                  </p>
-                  <p className="text-xs text-brand-muted mt-2 leading-relaxed max-w-xl hidden sm:block font-medium">
-                    {restaurant.description}
-                  </p>
-                </div>
-              </div>
 
-              {/* TIPO DE SERVICIO DISPONIBLE */}
-              <div className="flex items-center gap-3 shrink-0 relative z-10 bg-brand-dark/45 border border-brand-border/30 px-4.5 py-3 rounded-2xl">
-                <Clock className={`w-4.5 h-4.5 ${isPinkTheme ? 'text-pink-500' : 'text-brand-orange'}`} />
-                <div className="text-left">
-                  <p className="text-[9px] text-brand-muted font-bold uppercase tracking-widest">MODALIDAD UIDE</p>
-                  <p className="text-xs font-black text-white">Retiro / Delivery</p>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-3">
+                      <h2 className="text-xl md:text-2xl font-black text-white tracking-tight">
+                        {restaurant.name}
+                      </h2>
+                    </div>
+                    <p className={`text-xs font-black mt-1 ${isPinkTheme ? 'text-pink-400' : 'text-brand-orange'}`}>
+                      {restaurant.tagline}
+                    </p>
+                    <p className="text-xs text-brand-muted mt-2 leading-relaxed max-w-xl hidden sm:block font-medium">
+                      {restaurant.description}
+                    </p>
+                  </div>
+                </div>
+
+                {/* TIPO DE SERVICIO DISPONIBLE */}
+                <div className="flex items-center gap-3 shrink-0 relative z-10 bg-brand-dark/45 border border-brand-border/30 px-4.5 py-3 rounded-2xl">
+                  <Clock className={`w-4.5 h-4.5 ${isPinkTheme ? 'text-pink-500' : 'text-brand-orange'}`} />
+                  <div className="text-left">
+                    <p className="text-[9px] text-brand-muted font-bold uppercase tracking-widest">MODALIDAD UIDE</p>
+                    <p className="text-xs font-black text-white">Retiro / Delivery</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* GRILLA DE PLATOS DE COMIDA */}
             <div className="p-7 md:p-9">
@@ -725,6 +725,17 @@ export default function RestaurantGrid({
                           </div>
                         </div>
 
+                        {/* IMAGEN DE PLATO SI EXISTE */}
+                        {dish.imageSrc && (
+                          <div className="w-full h-36 rounded-xl overflow-hidden border border-brand-border/40 mb-3.5 relative">
+                            <img
+                              src={dish.imageSrc}
+                              alt={dish.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                        )}
+
                         {/* TÍTULO DEL PLATO */}
                         <h3 className={`font-black text-base text-brand-text transition-colors ${isPinkTheme ? 'group-hover:text-pink-500' : 'group-hover:text-brand-orange'
                           }`}>
@@ -765,7 +776,7 @@ export default function RestaurantGrid({
       })}
 
       {/* COMPORTAMIENTO CASO EXCEPCIONAL DE CERO RESULTADOS */}
-      {visibleRestaurants.length === 0 || MOCK_RESTAURANTS.every(r => searchTerm && MOCK_DISHES.filter(d => d.category === r.id && (d.name.toLowerCase().includes(searchTerm.toLowerCase()) || d.description.toLowerCase().includes(searchTerm.toLowerCase()))).length === 0) ? (
+      {visibleRestaurants.length === 0 || MOCK_RESTAURANTS.every(r => searchTerm && dishes.filter(d => d.category === r.id && (d.name.toLowerCase().includes(searchTerm.toLowerCase()) || d.description.toLowerCase().includes(searchTerm.toLowerCase()))).length === 0) ? (
         <div className="text-center py-24 bg-brand-card/20 rounded-3xl border border-dashed border-brand-border flex flex-col items-center justify-center">
           <div className="p-4 bg-brand-border/30 rounded-full text-brand-muted mb-4.5">
             <ShieldAlert className="w-12 h-12" />
