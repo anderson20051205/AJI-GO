@@ -17,6 +17,16 @@ export interface User {
   restaurantAdminFor?: string;
 }
 
+export interface DishSize {
+  name: string;
+  priceAdd: number;
+}
+
+export interface DishExtra {
+  name: string;
+  price: number;
+}
+
 export interface Dish {
   id: string;
   name: string;
@@ -29,6 +39,8 @@ export interface Dish {
   tag: string;
   spicyLevel: number;
   imageSrc?: string;
+  sizes?: DishSize[];
+  extras?: DishExtra[];
 }
 
 export interface Restaurant {

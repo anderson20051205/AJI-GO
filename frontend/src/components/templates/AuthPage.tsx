@@ -8,6 +8,36 @@ interface AuthPageProps {
   onLoginSuccess: (user: UserType) => void;
 }
 
+const checkEmailTypo = (val: string): string | null => {
+  const parts = val.split('@');
+  if (parts.length !== 2) return null;
+  const domain = parts[1].toLowerCase();
+
+  const commonTypos: Record<string, string> = {
+    'gamil.com': 'gmail.com',
+    'gmal.com': 'gmail.com',
+    'gmeil.com': 'gmail.com',
+    'gmail.con': 'gmail.com',
+    'gmail.co': 'gmail.com',
+    'hotmial.com': 'hotmail.com',
+    'hotmal.com': 'hotmail.com',
+    'outlook.con': 'outlook.com',
+    'uide.edu': 'uide.edu.ec',
+    'uide.edu.com': 'uide.edu.ec',
+  };
+
+  if (commonTypos[domain]) {
+    return commonTypos[domain];
+  }
+
+  // Si no tiene punto en el dominio
+  if (!domain.includes('.')) {
+    return `${domain}.com`;
+  }
+
+  return null;
+};
+
 export default function AuthPage({ onLoginSuccess }: AuthPageProps) {
   const [selectedRole, setSelectedRole] = useState<'customer' | 'admin' | 'driver'>('customer');
   const [isLogin, setIsLogin] = useState(true);
@@ -36,10 +66,15 @@ export default function AuthPage({ onLoginSuccess }: AuthPageProps) {
     }
 
     if (!validateEmail(email)) {
-      setError('Por favor, ingresa un correo electrónico válido.');
+      setError('Por favor, ingresa un correo electrónico válido (ej. usuario@gmail.com).');
       return;
     }
 
+    const typoCorrection = checkEmailTypo(email);
+    if (typoCorrection) {
+      setError(`¿Quisiste decir "${email.split('@')[0]}@${typoCorrection}"? Revisa la ortografía de tu correo.`);
+      return;
+    }
 
     if (password.length < 6) {
       setError('La contraseña debe tener al menos 6 caracteres.');
@@ -54,7 +89,6 @@ export default function AuthPage({ onLoginSuccess }: AuthPageProps) {
 
     setIsLoading(true);
 
-    // SIMULO UN TIEMPO DE RESPUESTA DE LA API DE INICIO DE SESIÓN
     setTimeout(() => {
       setIsLoading(false);
       if (isLogin) {
@@ -72,7 +106,7 @@ export default function AuthPage({ onLoginSuccess }: AuthPageProps) {
         setSuccessMsg('Registro exitoso. Iniciando sesión...');
         setTimeout(() => {
           onLoginSuccess({
-            name,
+            name: name.trim(),
             email,
             role: selectedRole,
             driverStatus: selectedRole === 'driver' ? 'approved' : 'none',

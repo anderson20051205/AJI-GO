@@ -39,6 +39,23 @@ export default function App() {
     localStorage.setItem('aji_go_dishes', JSON.stringify(dishes));
   }, [dishes]);
 
+  // ESTADO CONFIGURABLE DE RESTAURANTES POR LOCAL
+  const [restaurants, setRestaurants] = useState<Restaurant[]>(() => {
+    const saved = localStorage.getItem('aji_go_restaurants');
+    return saved ? JSON.parse(saved) : MOCK_RESTAURANTS;
+  });
+
+  // Guardar restaurantes en localStorage
+  useEffect(() => {
+    localStorage.setItem('aji_go_restaurants', JSON.stringify(restaurants));
+  }, [restaurants]);
+
+  const handleUpdateRestaurant = (updatedRest: Restaurant) => {
+    setRestaurants(prev => prev.map(r => r.id === updatedRest.id ? updatedRest : r));
+    // También actualizar el nombre del restaurante en los platos asociados
+    setDishes(prev => prev.map(d => d.category === updatedRest.id ? { ...d, restaurant: updatedRest.name } : d));
+  };
+
   // Scroll hacia arriba automático al cambiar de restaurante
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -324,6 +341,10 @@ export default function App() {
                 dishes={dishes}
                 onAddDish={(newDish: Dish) => setDishes(prev => [newDish, ...prev])}
                 onDeleteDish={(dishId: string) => setDishes(prev => prev.filter(d => d.id !== dishId))}
+                onEditDish={(updatedDish: Dish) => setDishes(prev => prev.map(d => d.id === updatedDish.id ? updatedDish : d))}
+                restaurants={restaurants}
+                onUpdateRestaurant={handleUpdateRestaurant}
+                onUpdateUser={setCurrentUser}
               />
             </motion.div>
           ) : viewMode === 'driver' ? (
@@ -345,7 +366,7 @@ export default function App() {
           ) : activePage === 'dashboard' ? (
             /* VISTA DEL CLIENTE */
             <motion.div
-              key={selectedRestaurantId ? `restaurant-${selectedRestaurantId}` : "dashboard"}
+              key={selectedRestaurantId ? `restaurant-${selectedRestaurantId}` : searchTerm ? "search-results" : "dashboard"}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -354,7 +375,7 @@ export default function App() {
               {selectedRestaurantId ? (
                 /* MENÚ DEL LOCAL ESPECÍFICO SELECCIONADO */
                 (() => {
-                  const currentRest = MOCK_RESTAURANTS.find(r => r.id === selectedRestaurantId);
+                  const currentRest = restaurants.find(r => r.id === selectedRestaurantId);
                   if (!currentRest) return null;
 
                   return (
@@ -422,11 +443,36 @@ export default function App() {
                           onSelectItem={setSelectedItemForModal}
                           selectedRestaurantId={selectedRestaurantId}
                           dishes={dishes}
+                          restaurants={restaurants}
                         />
                       </div>
                     </div>
                   );
                 })()
+              ) : searchTerm ? (
+                /* RESULTADOS DE BÚSQUEDA GLOBAL */
+                <div className="space-y-6 max-w-[95%] xl:max-w-[90%] 2xl:max-w-[1440px] mx-auto px-4 md:px-8 py-8 text-left">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-black text-brand-text">
+                      Resultados de búsqueda para: <span className="text-brand-orange">"{searchTerm}"</span>
+                    </h2>
+                    <button
+                      onClick={() => setSearchTerm('')}
+                      className="px-4.5 py-3 rounded-xl bg-white border border-brand-border hover:border-brand-orange text-brand-text hover:text-brand-orange font-black text-xs shadow-sm transition-all cursor-pointer"
+                    >
+                      Limpiar Búsqueda
+                    </button>
+                  </div>
+
+                  <RestaurantGrid
+                    selectedCategory="all"
+                    searchTerm={searchTerm}
+                    onSelectItem={setSelectedItemForModal}
+                    selectedRestaurantId={null}
+                    dishes={dishes}
+                    restaurants={restaurants}
+                  />
+                </div>
               ) : (
                 /* INICIO DE PLATAFORMA (CAMPUS HERO & CAROUSEL) */
                 <>
@@ -460,7 +506,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  <RestaurantCarousel onSelectRestaurant={setSelectedRestaurantId} />
+                  <RestaurantCarousel restaurants={restaurants} onSelectRestaurant={setSelectedRestaurantId} />
                 </>
               )}
             </motion.div>
@@ -545,6 +591,7 @@ export default function App() {
             onUpdateUser={(updated) => {
               setCurrentUser(updated);
             }}
+            restaurants={restaurants}
           />
         )}
       </AnimatePresence>

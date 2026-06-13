@@ -17,27 +17,37 @@ export default function FoodItemModal({
 }: FoodItemModalProps) {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('standard');
-  const [extras, setExtras] = useState<Record<string, boolean>>({
-    cheese: false,
-    bacon: false,
-    spicySauce: false
-  });
+  const [extras, setExtras] = useState<Record<string, boolean>>({});
   const [specialNotes, setSpecialNotes] = useState('');
   const [totalPrice, setTotalPrice] = useState(item.price);
 
-  // DEFINO LAS OPCIONES DE TAMAÑO DISPONIBLES EN LA UIDE
-  const sizeOptions = [
-    { id: 'standard', name: 'Estándar', priceAdd: 0 },
-    { id: 'familiar', name: 'Familiar', priceAdd: 12.00 },
-    { id: 'gigante', name: 'Tamaño AJI GO', priceAdd: 22.00 }
-  ];
+  // DEFINO LAS OPCIONES DE TAMAÑO DISPONIBLES EN EL PRODUCTO O POR DEFECTO
+  const sizeOptions = item.sizes && item.sizes.length > 0
+    ? item.sizes.map((s, idx) => ({ id: `sz-${idx}`, name: s.name, priceAdd: s.priceAdd }))
+    : [{ id: 'standard', name: 'Estándar', priceAdd: 0 }];
 
-  // EXTRAS EXCLUSIVOS
-  const extraOptions = [
-    { id: 'cheese', name: 'Queso Extra', price: 3.50 },
-    { id: 'bacon', name: 'Tocino Ahumado', price: 4.90 },
-    { id: 'spicySauce', name: 'Doble Crema de Rocoto', price: 1.50 }
-  ];
+  // EXTRAS EXCLUSIVOS DEL PRODUCTO O NINGUNO SI NO TIENE
+  const extraOptions = item.extras && item.extras.length > 0
+    ? item.extras.map((e, idx) => ({ id: `ex-${idx}`, name: e.name, price: e.price }))
+    : [];
+
+  // Resetear el estado al abrir o cambiar de producto
+  useEffect(() => {
+    setQuantity(1);
+    if (sizeOptions.length > 0) {
+      setSelectedSize(sizeOptions[0].id);
+    } else {
+      setSelectedSize('standard');
+    }
+    
+    const initialExtras: Record<string, boolean> = {};
+    extraOptions.forEach(opt => {
+      initialExtras[opt.id] = false;
+    });
+    setExtras(initialExtras);
+    setSpecialNotes('');
+    setTotalPrice(item.price);
+  }, [item]);
 
   //ACTUALIZO EL PRECIO TOTAL CADA VEZ QUE CAMBIA LA CANTIDAD, TAMAÑO O EXTRAS
   useEffect(() => {
@@ -53,7 +63,7 @@ export default function FoodItemModal({
     });
 
     setTotalPrice(base * quantity);
-  }, [quantity, selectedSize, extras, item.price]);
+  }, [quantity, selectedSize, extras, item.price, selectedSize, item.sizes, item.extras]);
 
   const handleToggleExtra = (id: string) => {
     setExtras(prev => ({ ...prev, [id]: !prev[id] }));
@@ -138,54 +148,58 @@ export default function FoodItemModal({
           </div>
 
           {/* SELECCIONAR TAMAÑO */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-black text-brand-text uppercase tracking-wider">Elige el Tamaño</h4>
-            <div className="grid grid-cols-3 gap-3.5">
-              {sizeOptions.map((sz) => (
-                <button
-                  key={sz.id}
-                  onClick={() => setSelectedSize(sz.id)}
-                  className={`p-3.5 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-1 cursor-pointer ${selectedSize === sz.id
-                      ? 'bg-brand-orange/10 border-brand-orange text-brand-orange shadow-md'
-                      : 'bg-brand-dark/50 border-brand-border text-brand-muted hover:text-brand-text'
-                    }`}
-                >
-                  <span className="text-xs font-bold">{sz.name}</span>
-                  <span className="text-[10px] font-semibold">
-                    {sz.priceAdd === 0 ? 'Sin recargo' : `+ S/ ${sz.priceAdd.toFixed(2)}`}
-                  </span>
-                </button>
-              ))}
+          {sizeOptions.length > 1 && (
+            <div className="space-y-3">
+              <h4 className="text-xs font-black text-brand-text uppercase tracking-wider">Elige el Tamaño</h4>
+              <div className="grid grid-cols-3 gap-3.5">
+                {sizeOptions.map((sz) => (
+                  <button
+                    key={sz.id}
+                    onClick={() => setSelectedSize(sz.id)}
+                    className={`p-3.5 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-1 cursor-pointer ${selectedSize === sz.id
+                        ? 'bg-brand-orange/10 border-brand-orange text-brand-orange shadow-md'
+                        : 'bg-brand-dark/50 border-brand-border text-brand-muted hover:text-brand-text'
+                      }`}
+                  >
+                    <span className="text-xs font-bold">{sz.name}</span>
+                    <span className="text-[10px] font-semibold">
+                      {sz.priceAdd === 0 ? 'Sin recargo' : `+ S/ ${sz.priceAdd.toFixed(2)}`}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* SELECCIONAR EXTRAS */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-black text-brand-text uppercase tracking-wider">Agregar Extras</h4>
-            <div className="space-y-2">
-              {extraOptions.map((opt) => (
-                <div
-                  key={opt.id}
-                  onClick={() => handleToggleExtra(opt.id)}
-                  className={`flex justify-between items-center p-3.5 rounded-2xl border cursor-pointer select-none transition-all ${extras[opt.id]
-                      ? 'bg-brand-orange/5 border-brand-orange/50 text-brand-text font-bold'
-                      : 'bg-brand-dark/30 border-brand-border text-brand-muted hover:text-brand-text'
-                    }`}
-                >
-                  <span className="text-xs font-bold">{opt.name}</span>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[11px] font-black text-brand-orange">+ S/ {opt.price.toFixed(2)}</span>
-                    <input
-                      type="checkbox"
-                      checked={extras[opt.id]}
-                      onChange={() => { }} // DETECTADO POR EL CONTENEDOR DIV CLICKEABLE
-                      className="w-4.5 h-4.5 accent-brand-orange rounded border-brand-border bg-brand-dark pointer-events-none"
-                    />
+          {extraOptions.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="text-xs font-black text-brand-text uppercase tracking-wider">Agregar Extras</h4>
+              <div className="space-y-2">
+                {extraOptions.map((opt) => (
+                  <div
+                    key={opt.id}
+                    onClick={() => handleToggleExtra(opt.id)}
+                    className={`flex justify-between items-center p-3.5 rounded-2xl border cursor-pointer select-none transition-all ${extras[opt.id]
+                        ? 'bg-brand-orange/5 border-brand-orange/50 text-brand-text font-bold'
+                        : 'bg-brand-dark/30 border-brand-border text-brand-muted hover:text-brand-text'
+                      }`}
+                  >
+                    <span className="text-xs font-bold">{opt.name}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[11px] font-black text-brand-orange">+ S/ {opt.price.toFixed(2)}</span>
+                      <input
+                        type="checkbox"
+                        checked={extras[opt.id]}
+                        onChange={() => { }} // DETECTADO POR EL CONTENEDOR DIV CLICKEABLE
+                        className="w-4.5 h-4.5 accent-brand-orange rounded border-brand-border bg-brand-dark pointer-events-none"
+                      />
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* INSTRUCCIONES ADICIONALES */}
           <div className="space-y-2">

@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Mail, MapPin, Award, Calendar, BadgeCheck, Sparkles, ShoppingBag, ArrowRight, Bike } from 'lucide-react';
 import ChiliIcon from '../atoms/ChiliIcon';
-import { User, Order } from '../../types';
-import { MOCK_RESTAURANTS } from './RestaurantGrid';
+import { User, Order, Restaurant } from '../../types';
 
 // INTERFAZ PARA CONTROLAR LAS PROPIEDADES DEL MODAL DE PERFIL DE USUARIO
 interface UserProfileModalProps {
@@ -14,6 +13,7 @@ interface UserProfileModalProps {
   currentAddress: string;
   onViewOrderTracking: (order: any) => void;
   onUpdateUser?: (updatedUser: User) => void;
+  restaurants: Restaurant[];
 }
 
 export default function UserProfileModal({
@@ -23,7 +23,8 @@ export default function UserProfileModal({
   orders,
   currentAddress,
   onViewOrderTracking,
-  onUpdateUser
+  onUpdateUser,
+  restaurants
 }: UserProfileModalProps) {
   const [isApplying, setIsApplying] = useState(false);
   const [phone, setPhone] = useState('');
@@ -32,7 +33,7 @@ export default function UserProfileModal({
 
   // ESTADOS PARA EL CANJE DE PUNTOS
   const [isRedeeming, setIsRedeeming] = useState(false);
-  const [selectedRedeemRestaurant, setSelectedRedeemRestaurant] = useState(MOCK_RESTAURANTS[0]?.name || 'Piedra Negra');
+  const [selectedRedeemRestaurant, setSelectedRedeemRestaurant] = useState(() => restaurants[0]?.name || 'Piedra Negra');
   const [selectedPackage, setSelectedPackage] = useState(50);
   const [redeemSuccessMsg, setRedeemSuccessMsg] = useState('');
   const [redeemErrorMsg, setRedeemErrorMsg] = useState('');
@@ -267,7 +268,7 @@ export default function UserProfileModal({
                       onChange={(e) => setSelectedRedeemRestaurant(e.target.value)}
                       className="w-full bg-white border border-brand-border rounded-xl p-2.5 text-xs text-brand-text focus:outline-none focus:border-brand-orange cursor-pointer"
                     >
-                      {MOCK_RESTAURANTS.map((rest) => (
+                      {restaurants.map((rest) => (
                         <option key={rest.id} value={rest.name}>
                           {rest.name}
                         </option>

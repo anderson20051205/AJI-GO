@@ -216,31 +216,60 @@ export const MOCK_DISHES: Dish[] = [
     rating: 4.9,
     badgeText: 'ECG',
     tag: 'Hamburguesas',
-    spicyLevel: 0
+    spicyLevel: 0,
+    sizes: [
+      { name: 'Estándar', priceAdd: 0 },
+      { name: 'Doble Carne', priceAdd: 4.50 },
+      { name: 'Triple Carne', priceAdd: 7.50 }
+    ],
+    extras: [
+      { name: 'Queso Cheddar', price: 1.50 },
+      { name: 'Tocino Ahumado', price: 2.00 },
+      { name: 'Huevo Frito', price: 1.00 }
+    ]
   },
   {
     id: 'cg2',
-    name: 'Costillas BBQ Ahumadas',
-    description: 'Media costillar de cerdo tierna cocida a fuego lento, baja en grasa, bañada en salsa barbacoa de la casa, servida con papas rústicas.',
-    price: 18.00,
+    name: 'Papas Fritas Rústicas',
+    description: 'Deliciosas papas rústicas cortadas a mano, fritas hasta quedar doradas y crujientes, sazonadas con sal marina y pimentón.',
+    price: 4.50,
     category: 'el-cargo',
     restaurant: 'El Cargo',
     rating: 4.8,
     badgeText: 'ECG',
-    tag: 'Costillas',
-    spicyLevel: 0
+    tag: 'Papas Fritas',
+    spicyLevel: 0,
+    sizes: [
+      { name: 'Medianas', priceAdd: 0 },
+      { name: 'Grandes', priceAdd: 1.50 },
+      { name: 'Familiares', priceAdd: 3.00 }
+    ],
+    extras: [
+      { name: 'Queso Cheddar Caliente', price: 1.20 },
+      { name: 'Tocino Crujiente', price: 1.80 },
+      { name: 'Salsa de Ajo de la Casa', price: 0.80 }
+    ]
   },
   {
     id: 'cg3',
-    name: 'Alitas Glaseadas Mango Curry',
-    description: '8 alitas crujientes bañadas en una salsa dulce y ligeramente picante de mango y curry, acompañadas de bastones de apio.',
-    price: 11.50,
+    name: 'Papas Fritas Clásicas',
+    description: 'Papas fritas tradicionales de corte fino, súper crocantes por fuera y suaves por dentro.',
+    price: 3.50,
     category: 'el-cargo',
     restaurant: 'El Cargo',
     rating: 4.7,
     badgeText: 'ECG',
-    tag: 'Entradas',
-    spicyLevel: 1
+    tag: 'Papas Fritas',
+    spicyLevel: 0,
+    sizes: [
+      { name: 'Medianas', priceAdd: 0 },
+      { name: 'Grandes', priceAdd: 1.20 },
+      { name: 'Familiares', priceAdd: 2.50 }
+    ],
+    extras: [
+      { name: 'Queso Cheddar Caliente', price: 1.20 },
+      { name: 'Tocino Crujiente', price: 1.80 }
+    ]
   },
 
   // Toscana (Pizza & Pastas)
@@ -322,15 +351,24 @@ export const MOCK_DISHES: Dish[] = [
   // La Hueca (Comida Típica)
   {
     id: 'lh1',
-    name: 'Almuerzo Ejecutivo del Día',
-    description: 'Sopa casera tradicional, plato fuerte con arroz, proteína a elegir (carne, pollo o pescado), ensalada fresca y jugo natural.',
-    price: 8.50,
+    name: 'Cevichochos Tradicionales de la UIDE',
+    description: 'Deliciosos cevichochos con cuero crujiente, chifles, tostado, canguil y una salsa cítrica espectacular de la casa.',
+    price: 5.50,
     category: 'la-hueca',
     restaurant: 'La Hueca',
     rating: 4.8,
     badgeText: 'LH',
-    tag: 'Almuerzos',
-    spicyLevel: 0
+    tag: 'Cevichochos',
+    spicyLevel: 0,
+    sizes: [
+      { name: 'Personal', priceAdd: 0 },
+      { name: 'Súper Cevichochos', priceAdd: 2.00 }
+    ],
+    extras: [
+      { name: 'Cuero Crujiente', price: 1.20 },
+      { name: 'Porción de Tostado', price: 0.60 },
+      { name: 'Aguacate Fresco', price: 1.00 }
+    ]
   },
   {
     id: 'lh2',
@@ -468,11 +506,11 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
   { 
     id: 'la-hueca', 
     name: 'La Hueca', 
-    tagline: 'Tradición Ecuatoriana', 
+    tagline: 'Cevichochos & Tradición Ecuatoriana', 
     rating: 4.8, 
     badgeText: 'LH', 
     bannerColor: 'from-orange-950 to-orange-900',
-    description: 'El auténtico sabor de la comida casera ecuatoriana, ceviches frescos y platos tradicionales para disfrutar en la UIDE.'
+    description: 'Los mejores cevichochos del campus, ceviches frescos y platos típicos ecuatorianos con el auténtico sabor tradicional.'
   },
   { 
     id: 'hanaska', 
@@ -588,6 +626,7 @@ interface RestaurantGridProps {
   onSelectItem: (item: Dish) => void;
   selectedRestaurantId: string | null;
   dishes: Dish[];
+  restaurants: Restaurant[];
 }
 
 export default function RestaurantGrid({
@@ -595,11 +634,12 @@ export default function RestaurantGrid({
   searchTerm,
   onSelectItem,
   selectedRestaurantId,
-  dishes
+  dishes,
+  restaurants
 }: RestaurantGridProps) {
 
   // FILTRO RESTAURANTES SEGUN LA SELECCION DEL USUARIO
-  const visibleRestaurants = MOCK_RESTAURANTS.filter(r =>
+  const visibleRestaurants = restaurants.filter(r =>
     selectedRestaurantId ? r.id === selectedRestaurantId : (selectedCategory === 'all' || r.id === selectedCategory)
   );
 
@@ -776,7 +816,7 @@ export default function RestaurantGrid({
       })}
 
       {/* COMPORTAMIENTO CASO EXCEPCIONAL DE CERO RESULTADOS */}
-      {visibleRestaurants.length === 0 || MOCK_RESTAURANTS.every(r => searchTerm && dishes.filter(d => d.category === r.id && (d.name.toLowerCase().includes(searchTerm.toLowerCase()) || d.description.toLowerCase().includes(searchTerm.toLowerCase()))).length === 0) ? (
+      {visibleRestaurants.length === 0 || restaurants.every(r => searchTerm && dishes.filter(d => d.category === r.id && (d.name.toLowerCase().includes(searchTerm.toLowerCase()) || d.description.toLowerCase().includes(searchTerm.toLowerCase()))).length === 0) ? (
         <div className="text-center py-24 bg-brand-card/20 rounded-3xl border border-dashed border-brand-border flex flex-col items-center justify-center">
           <div className="p-4 bg-brand-border/30 rounded-full text-brand-muted mb-4.5">
             <ShieldAlert className="w-12 h-12" />

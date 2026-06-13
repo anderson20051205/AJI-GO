@@ -1,20 +1,22 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Star, Clock, ArrowRight } from 'lucide-react';
-import { MOCK_RESTAURANTS } from './RestaurantGrid';
+import { Restaurant } from '../../types';
 
 // INTERFAZ PARA DEFINIR LAS PROPIEDADES DEL COMPONENTE ORGANISMO CARRUSEL
 interface RestaurantCarouselProps {
   onSelectRestaurant: (id: string) => void;
+  restaurants: Restaurant[];
 }
 
 export default function RestaurantCarousel({
-  onSelectRestaurant
+  onSelectRestaurant,
+  restaurants
 }: RestaurantCarouselProps) {
   // USO REFERENCIA PARA EL CONTENEDOR DE SCROLL Y ESTADOS PARA EL ELEMENTO ACTIVO
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const totalItems = MOCK_RESTAURANTS.length;
+  const totalItems = restaurants.length;
 
   const scrollToCard = (index: number) => {
     if (scrollContainerRef.current) {
@@ -232,12 +234,12 @@ export default function RestaurantCarousel({
           className="flex gap-6 overflow-x-auto pb-6 scrollbar-none scroll-smooth snap-x snap-mandatory pr-4"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {MOCK_RESTAURANTS.length === 0 ? (
+          {restaurants.length === 0 ? (
             <div className="w-full text-center py-10 bg-white border border-brand-border rounded-3xl">
               <p className="text-brand-muted text-xs font-bold">No hay locales gastronómicos registrados en el campus.</p>
             </div>
           ) : (
-            MOCK_RESTAURANTS.map((restaurant) => {
+            restaurants.map((restaurant) => {
             const theme = getThemeColors(restaurant.id);
             return (
               <div
@@ -306,7 +308,7 @@ export default function RestaurantCarousel({
 
         {/* INDICADORES FLOTANTES */}
         <div className="flex justify-center gap-2 mt-4.5">
-          {MOCK_RESTAURANTS.map((_, idx) => (
+          {restaurants.map((_, idx) => (
             <button
               key={idx}
               onClick={() => scrollToCard(idx)}
